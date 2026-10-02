@@ -123,6 +123,19 @@ Workflow-fila ligg i `.github/workflows/deploy.yml` og brukar
 > pa begge, men dersom du set opp noko heilt nytt seinare kan det vere
 > enklare a legge den statiske sida pa Workers i staden.
 
+> **Om tokenet og `workflow`-scope:** GitHub nektar a ta imot ei fil under
+> `.github/workflows/` fra eit token som ikkje har `workflow`-scopet. Feilen
+> ser slik ut:
+> `refusing to allow an OAuth App to create or update workflow ... without 'workflow' scope`.
+> Repoet er alt oppretta og resten av nettstedet er pusht; berre workflow-fila
+> manglar pa GitHub. Køyr desse to kommandoane, sa er ho ogsa ute:
+>
+> ```bash
+> gh auth refresh -s workflow
+> cd nettsted
+> git push
+> ```
+
 Hugs a byte prosjektnamnet i `env: CLOUDFLARE_PROJECT_NAME` i workflow-fila
 om du valde eit anna namn enn `jetlogg-704`.
 

@@ -1,0 +1,62 @@
+# ============================================================================
+#  Deploy JETLOGG 704-nettvisaren til Cloudflare Pages
+#
+#  Korleis dette heng saman:
+#    - Repo-rota ER innhaldet i nettsted/ (dvs. index.html, viser.html,
+#      css/, js/, data/, logo/ ligg i rota). Difor blir
+#      "pages deploy ." rett – det er inga byggjing, berre statiske filer.
+#    - Kvar push til main publiserer sida på nytt.
+#
+#  KRAV (sjå nettsted/README.md for steg-for-steg):
+#    - GitHub-secret CLOUDFLARE_API_TOKEN
+#    - GitHub-secret CLOUDFLARE_ACCOUNT_ID
+#    - Variabelen CLOUDFLARE_PROJECT_NAME nedanfor maa byte namn til det
+#      Pages-prosjektet heiter i Cloudflare (eller setjast som repo-variabel).
+#
+#  MERK om handlinga:
+#    cloudflare/pages-action er TREKT TILBAKE og finst ikkje lenger på
+#    GitHub (repoet svarar 404). Cloudflare si gjeldande oppskrift for
+#    "Direct Upload med CI" er cloudflare/wrangler-action med
+#    "wrangler pages deploy". Det er den vi brukar her. Dersom du vil
+#    nagle ein eksakt wrangler-versjon, legg til wranglerVersion under
+#    "with:" (t.d. wranglerVersion: "4").
+#
+#    Alternativ som ikkje krev nokon workflow i det heile: koble
+#    Pages-prosjektet DIREKTE til GitHub-repoet i Cloudflare-dashbordet
+#    (Git-integrasjon). Da byggjer og publiserer Cloudflare sjølv ved push.
+# ============================================================================
+name: Deploy til Cloudflare Pages
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  deployments: write
+
+concurrency:
+  group: "cloudflare-pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Bygg og publiser
+    env:
+      CLOUDFLARE_PROJECT_NAME: jetlogg-704
+    steps:
+      - name: Hent kjeldekoden
+        uses: actions/checkout@v4
+
+      # Inga byggjing: nettstedet er reine HTML/CSS/JS-filer.
+      # (plotly.js blir henta fra CDN i nettlesaren, versjon 3.5.0.)
+
+      - name: Publiser til Cloudflare Pages
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy . --project-name=${{ env.CLOUDFLARE_PROJECT_NAME }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
