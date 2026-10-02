@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<!--
+  index.html – framside for JETLOGG 704-nettvisaren.
+
+  OM PASSORDSFELTET PÅ DENNE SIDA – LES DETTE:
+  ---------------------------------------------------------------------------
+  Den ekte lasen er Cloudflare Access. Den kjorer HELT YTST, i Cloudflare sitt
+  nett, for sida i det heile tatt blir sendt til nettlesaren. Er du ikkje
+  logga inn der, far du ikkje ein gong HTML-en.
+
+  Feltet nedanfor er berre ein ekstra sperre i grensesnittet. Det er IKKJE
+  sikkerheit: sida er statisk, sa passordet og datafila ligg i nettlesaren
+  uansett. Den som kjenner URL-en til ei JSON-fil kan hente ho direkte om
+  Access-policyen ikkje stenger han ute. Difor star det same i klartekst til
+  operatoren i README.md.
+  ---------------------------------------------------------------------------
+-->
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JETLOGG 704 – innlogging</title>
+<link rel="icon" href="logo/Seabrokers_Dolomiti_RGB.svg">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<main class="inngang">
+  <div class="kort">
+    <img class="logo" src="logo/Seabrokers_Dolomiti_RGB.svg"
+         alt="Seabrokers Dolomiti">
+
+    <h1>JETLOGG 704 &ndash; peledata</h1>
+    <p class="ingress">
+      Privat viser for jetlogg-filene fra riggen. Her finn du kurvene for
+      hver enkelt hendelse &ndash; klipte og fulle tidsforlop, pauser,
+      faser og fartsprofil.
+    </p>
+
+    <form id="form" autocomplete="off">
+      <div class="felt">
+        <label for="passord">Passord</label>
+        <input type="password" id="passord" name="passord"
+               autocomplete="current-password" aria-describedby="sperre-notis">
+      </div>
+      <button type="submit" class="knapp-sjef">Opne viseren</button>
+      <p id="feil" class="feilmelding" role="alert">
+        Feil passord. Prov igjen.
+      </p>
+    </form>
+
+    <p id="sperre-notis" class="notis sperre">
+      <b>Merk:</b> Tilgangen styres av Cloudflare Access &ndash; dette feltet
+      er kun ein ekstra sperre i grensesnittet. Det som faktisk verner dataa
+      er innlogginga Cloudflare spor om (engangskode pa e-post), og ho skjer
+      i Cloudflare sitt nett <i>for</i> sida blir lasta ned.
+    </p>
+
+    <p class="bunnlinje">
+      Har du kome hit utan a bli bedt om a logge inn? Da manglar
+      Access-policyen &ndash; se nettsted/README.md.
+    </p>
+  </div>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------------------------------------------------------------------
+     Passordet blir IKKJE samanlikna som klartekst her. Vi lagrar berre
+     SHA-256-summen av det operator-setje passordet og samanliknar summar.
+     Det gjer at passordet ikkje star i fila – men det er framleis berre eit
+     grensesnitt-felt pa ei statisk side, ikkje eit vern. Sjolv med summen
+     kan kven som helst hente JSON-filene direkte om Access ikkje stenger.
+     --------------------------------------------------------------------- */
+  var PASSORD_SHA256 = "678d3e6eb832dc24a1cd5c5e7298c8c0c4e74f15e7fcdfac7cf6bdc32c45ac80";
+
+  function hex(buffer) {
+    var b = new Uint8Array(buffer), s = "";
+    for (var i = 0; i < b.length; i++) {
+      s += (b[i] < 16 ? "0" : "") + b[i].toString(16);
+    }
+    return s;
+  }
+
+  function sum(tekst) {
+    var data = new TextEncoder().encode(tekst);
+    return crypto.subtle.digest("SHA-256", data).then(hex);
+  }
+
+  var form = document.getElementById("form");
+  var felt = document.getElementById("passord");
+  var feil = document.getElementById("feil");
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    feil.classList.remove("vis");
+    if (!window.crypto || !window.crypto.subtle) {
+      /* http:// pa ein annan maskin enn localhost er ikkje "secure context".
+         Pa Cloudflare Pages (https) og pa localhost virkar dette. */
+      feil.textContent = "Nettlesaren nektar a rekne sjekksum her "
+        + "(sida ma koyrast over https eller localhost).";
+      feil.classList.add("vis");
+      return;
+    }
+    sum(felt.value).then(function (s) {
+      if (s === PASSORD_SHA256) {
+        try { sessionStorage.setItem("jetlogg.innlogga", "1"); } catch (e2) {}
+        window.location.href = "viser.html";
+      } else {
+        feil.textContent = "Feil passord. Prov igjen.";
+        feil.classList.add("vis");
+        felt.value = "";
+        felt.focus();
+      }
+    }).catch(function () {
+      feil.textContent = "Klarte ikkje a sjekke passordet i denne nettlesaren.";
+      feil.classList.add("vis");
+    });
+  });
+
+  felt.focus();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,240 @@
+/* ============================================================================
+   JETLOGG 704 – nettvisar
+   Stilar for framside (index.html) og visar (viser.html).
+   Fargar henta fra Seabrokers Dolomiti-logoen: #004996 (mork bla) og
+   #00B4E3 (lys bla). Alt i nynorsk-noytral bokmal, lesbart pa skjerm.
+   ========================================================================== */
+
+:root {
+  --bla:       #004996;
+  --bla-mork:  #00325f;
+  --lysbla:    #00b4e3;
+  --gronn:     #399b54;
+  --raud:      #b3261e;
+  --kant:      #d7dee7;
+  --graa:      #5b6877;
+  --bakgrunn:  #eef2f7;
+  --kort:      #ffffff;
+  --dybde:     #a052ad;
+}
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  background: var(--bakgrunn);
+  color: #1d2430;
+  line-height: 1.5;
+  font-size: 15px;
+}
+
+a { color: var(--bla); }
+
+/* ---------- topplinje ---------- */
+.topp {
+  background: linear-gradient(180deg, var(--bla) 0%, var(--bla-mork) 100%);
+  color: #fff;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.topp .merke {
+  background: #fff;
+  border-radius: 6px;
+  padding: 5px 10px;
+  display: flex;
+  align-items: center;
+}
+.topp .merke img { height: 30px; display: block; }
+.topp h1 { font-size: 17px; margin: 0; font-weight: 600; letter-spacing: .2px; }
+.topp .undertittel { font-size: 12.5px; opacity: .85; margin: 0; }
+.topp .plass { flex: 1; }
+.topp a.tilbake { color: #fff; font-size: 13px; text-decoration: none;
+                  border: 1px solid rgba(255,255,255,.55); border-radius: 4px;
+                  padding: 5px 10px; }
+.topp a.tilbake:hover { background: rgba(255,255,255,.14); }
+
+/* ---------- framsida ---------- */
+.inngang {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 18px;
+  background:
+    radial-gradient(1100px 520px at 12% -10%, rgba(0,180,227,.20), transparent 60%),
+    radial-gradient(900px 480px at 100% 110%, rgba(0,73,150,.16), transparent 60%),
+    var(--bakgrunn);
+}
+.kort {
+  background: var(--kort);
+  border: 1px solid var(--kant);
+  border-radius: 12px;
+  box-shadow: 0 18px 40px rgba(16, 35, 60, .12);
+  padding: 34px 38px 30px;
+  width: 100%;
+  max-width: 560px;
+}
+.kort .logo { display: block; width: 100%; max-width: 320px; margin: 0 auto 22px; }
+.kort h1 { font-size: 21px; margin: 0 0 6px; color: var(--bla-mork); }
+.kort .ingress { margin: 0 0 22px; color: var(--graa); font-size: 14.5px; }
+
+.felt { margin-bottom: 14px; }
+.felt label { display: block; font-size: 13px; font-weight: 600;
+              margin-bottom: 5px; color: #2c3947; }
+input[type="password"], input[type="text"], input[type="search"], select {
+  width: 100%;
+  padding: 9px 11px;
+  border: 1px solid var(--kant);
+  border-radius: 6px;
+  font-size: 14.5px;
+  font-family: inherit;
+  color: #1d2430;
+  background: #fff;
+}
+input:focus, select:focus {
+  outline: 2px solid var(--lysbla);
+  outline-offset: 1px;
+  border-color: var(--lysbla);
+}
+
+button, .knapp {
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  padding: 9px 16px;
+}
+.knapp-sjef {
+  background: var(--bla);
+  color: #fff;
+  font-weight: 600;
+  width: 100%;
+  padding: 11px 16px;
+  font-size: 15px;
+}
+.knapp-sjef:hover { background: var(--bla-mork); }
+.knapp-enkel { background: #fff; color: var(--bla); border-color: var(--bla);
+               font-weight: 600; }
+.knapp-enkel:hover { background: #eaf3fb; }
+
+.notis {
+  font-size: 12.8px;
+  color: var(--graa);
+  border-left: 3px solid var(--lysbla);
+  background: #f2f9fd;
+  padding: 9px 12px;
+  border-radius: 0 6px 6px 0;
+  margin-top: 20px;
+}
+.notis.sperre { border-left-color: #e0a800; background: #fff8e6; }
+.feilmelding { color: var(--raud); font-size: 13.5px; margin-top: 10px;
+               font-weight: 600; display: none; }
+.feilmelding.vis { display: block; }
+
+.bunnlinje { font-size: 12px; color: var(--graa); margin-top: 22px;
+             border-top: 1px solid var(--kant); padding-top: 12px; }
+
+/* ---------- visaren: kontrollpanel ---------- */
+.kontroller {
+  background: #fff;
+  border-bottom: 1px solid var(--kant);
+  padding: 12px 20px 14px;
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  box-shadow: 0 2px 6px rgba(16,35,60,.05);
+}
+.rad { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end; }
+.rad + .rad { margin-top: 10px; }
+.gruppe { display: flex; flex-direction: column; gap: 4px; }
+.gruppe.grow { flex: 1 1 260px; min-width: 200px; }
+.gruppe label { font-size: 12px; font-weight: 600; color: #2c3947; }
+.gruppe select, .gruppe input { max-width: 100%; }
+
+.velg { font-size: 14px; min-width: 320px; }
+
+.merkelapp { font-size: 12px; color: var(--graa); }
+.treff { font-size: 12.5px; color: var(--graa); min-height: 18px; }
+.treff.tom { color: var(--raud); font-weight: 600; }
+
+/* bolk-bytte (Klippet / Fullt) */
+.bolk { display: inline-flex; border: 1px solid var(--bla); border-radius: 6px;
+        overflow: hidden; }
+.bolk button {
+  background: #fff; color: var(--bla); border: 0; border-radius: 0;
+  padding: 9px 18px; font-weight: 600; font-size: 14px;
+}
+.bolk button + button { border-left: 1px solid var(--bla); }
+.bolk button[aria-pressed="true"] { background: var(--bla); color: #fff; }
+.bolk button:focus-visible { outline: 2px solid var(--lysbla); outline-offset: -3px; }
+
+.dykk { display: inline-flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+/* ---------- samandrag ---------- */
+.samandrag {
+  padding: 10px 20px;
+  font-size: 13.5px;
+  border-bottom: 1px solid var(--kant);
+  background: #fff;
+}
+.samandrag .fakta { display: inline-block; margin-right: 18px; margin-bottom: 2px;
+                    white-space: nowrap; }
+.samandrag .fakta b { font-weight: 700; color: #22303f; }
+
+/* ---------- meldingar / hint ---------- */
+.ramme {
+  border: 1px solid var(--kant);
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin: 14px 20px;
+  font-size: 13.5px;
+  background: #fff;
+}
+.ramme.feil { border-color: #f0b4b0; background: #fdf3f2; color: #7a1a15; }
+.ramme.hint { border-color: #bcd9ea; background: #f2f9fd; color: #24485f; }
+.ramme code { background: #eef2f7; padding: 1px 5px; border-radius: 3px;
+              font-size: 12.5px; }
+
+/* ---------- plott ---------- */
+.plottramme { padding: 0 20px; }
+#plott { width: 100%; min-height: 640px; }
+
+/* ---------- tabellar / fotnote ---------- */
+.tabell { padding: 6px 20px 20px; font-size: 12.5px; }
+.tabell h3 { font-size: 13.5px; margin: 16px 0 7px; color: #22303f; }
+.tabell .forklaring { font-size: 12.2px; color: var(--graa); margin: 0 0 8px; }
+.tabell table { border-collapse: collapse; width: 100%; background: #fff;
+                border: 1px solid var(--kant); border-radius: 6px;
+                overflow: hidden; }
+.tabell th, .tabell td { border-bottom: 1px solid var(--kant); padding: 5px 9px;
+                         text-align: left; white-space: nowrap; }
+.tabell th { background: #f3f6fa; font-weight: 600; position: sticky; top: 0; }
+.tabell tr:last-child td { border-bottom: 0; }
+.tabell tr.merket { background: #f5f6f8; color: var(--graa); }
+.tabell .rull { overflow-x: auto; }
+.fargeprikk { display: inline-block; width: 10px; height: 10px; margin-right: 6px;
+              border-radius: 2px; vertical-align: middle; }
+
+/* ---------- drag og slipp ---------- */
+#dropsone {
+  position: fixed; inset: 0; display: none; align-items: center;
+  justify-content: center; font-size: 24px; font-weight: 600;
+  color: var(--bla-mork); background: rgba(0,180,227,.12);
+  border: 4px dashed var(--bla); z-index: 50; pointer-events: none;
+}
+#dropsone.paa { display: flex; }
+
+/* ---------- botn ---------- */
+.botn { padding: 18px 20px 30px; font-size: 12px; color: var(--graa); }
+
+@media (max-width: 900px) {
+  .velg { min-width: 100%; }
+  #plott { min-height: 520px; }
+  .kort { padding: 26px 22px; }
+}
