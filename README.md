@@ -1,8 +1,12 @@
 # JETLOGG 704 – nettviser
 
 Nettviser for peledataene fra riggen. Siden er et reint statisk nettsted
-(HTML/CSS/JS) som blir publisert **helt åpent** – alle som kjenner adressen
-kommer inn på forsiden, og passordfeltet der slipper dem videre til viseren.
+(HTML/CSS/JS), publisert **helt åpent på GitHub Pages**:
+
+**<https://mgaaserud90-creator.github.io/jetlogg-704-nettviser/>**
+
+Alle som kjenner adressen kommer inn på forsiden, og passordfeltet der slipper
+dem videre til viseren.
 
 ---
 
@@ -19,55 +23,60 @@ Det du bør vite om hva passordfeltet faktisk gjør:
 |---|---|
 | Stopper den som bare bruker siden | **Ja.** Uten passordet kommer du ikke videre til `viser.html`. |
 | Stopper den som kjenner filnavnet til en datafil | **Nei.** `data/index.json` og hver hendelses-JSON er vanlige statiske filer. Skriver du `.../data/2026-10-01_K83_grouting.json` i nettleseren, får du hele fila – uten passord. |
+| Stopper søkemotorer | **Nei.** GitHub Pages er åpent indekserbart, og repoet er offentlig, så både kildekoden og datafilene ligger fritt tilgjengelig på GitHub i tillegg. |
 
 Passordet ligger ikke i klartekst: feltet regner ut **SHA-256-summen** av det
 du skriver og sammenligner med summen i `index.html` (`PASSORD_SHA256`). Det
 hindrer at passordet står synlig i kildekoden, men det er ikke kryptering –
 sjekksummen er offentlig, og datafilene er det også.
 
-> **Vil du låse dataene på ekte?** Da må filene serveres av noe som sjekker
-> passordet *før* fila blir sendt. Steg 6 viser de to måtene. Operatøren har
-> vurdert dette og valgt den åpne varianten.
+> **Vil du låse dataene på ekte?** Da duger ikke GitHub Pages, som ikke kan
+> passordbeskytte noe som helst. Du må over på noe som sjekker passordet *før*
+> fila blir sendt. Steg 6 viser de to måtene. Operatøren har vurdert dette og
+> valgt den åpne varianten.
 
 ---
 
 ## 1. Hva ligger hvor
 
 Nettstedet er **repo-rota**. Det vil si at innholdet i denne mappa
-(`nettsted/`) blir pushet som toppen av git-repoet, og Pages publiserer
-«rotmappa» uten noe byggesteg.
+(`nettsted/`) er toppen av git-repoet, og GitHub Pages publiserer rotmappa
+uten noe byggesteg.
 
 ```
 .                       <- repo-rota (innholdet i nettsted/)
+├── .nojekyll           slår av Jekyll – filene skal serveres som de er
 ├── index.html          forside: logo + inngang (passordfelt)
 ├── viser.html          selve viseren (nedtrekk, søk, plott)
 ├── css/style.css
 ├── js/viser.js         all logikk for viseren
 ├── logo/Seabrokers_Dolomiti_RGB.svg
-├── data/               JSON-filene (hendelser + index.json)
-│   ├── index.json      lista nedtrekksmenyen blir bygd fra – hold den oppdatert
-│   ├── 2026-10-01_K83_grouting.json
-│   ├── 2026-10-01_K83_pilotboring.json
-│   ├── 2026-10-01_K83_prejet.json
-│   ├── 2026-10-01_K87_grouting.json
-│   ├── _alle_2026-10-01.json        (kombinert fil – ikke i nedtrekksmenyen)
-│   ├── index.js        JS-tvilling av index.json (reserve for file://)
-│   └── <navn>.js       JS-tvilling av hver hendelses-JSON (samme reserve)
-└── .github/workflows/deploy.yml     automatisert publisering (valgfri, se 4b)
+└── data/               JSON-filene (hendelser + index.json)
+    ├── index.json      lista nedtrekksmenyen blir bygd fra – hold den oppdatert
+    ├── 2026-10-01_K83_grouting.json
+    ├── 2026-10-01_K83_pilotboring.json
+    ├── 2026-10-01_K83_prejet.json
+    ├── 2026-10-01_K87_grouting.json
+    ├── _alle_2026-10-01.json        (kombinert fil – ikke i nedtrekksmenyen)
+    ├── index.js        JS-tvilling av index.json (reserve for file://)
+    └── <navn>.js       JS-tvilling av hver hendelses-JSON (samme reserve)
 ```
 
 Plottbiblioteket blir hentet fra CDN, **versjon pinnet til `plotly.js v3.5.0`**
 (`https://cdn.plot.ly/plotly-3.5.0.min.js` i `viser.html`). Ingenting blir
-bygd; serveren leverer filene som de er.
+bygd; serveren leverer filene som de er. Alle stier i HTML-en er relative, så
+siden virker like godt i en undermappe (`/jetlogg-704-nettviser/`) som i rota.
+
+`.nojekyll` må ligge der. Uten den prøver GitHub å kjøre filene gjennom
+Jekyll, og det kan endre eller holde tilbake filer.
 
 Hver JSON-fil har en liten **JS-tvilling** ved siden av seg (`index.js`,
 `<navn>.js`). Tvillingene inneholder nøyaktig den samme JSON-en, bare pakket inn
 i `window.JETLOGG_INDEKS` / `window.JETLOGG_HENDELSE[...]`. De blir skrevet av
 den samme generatoren som lager `index.json`, slik at de aldri kan komme i
 utakt, og de er bare en **reserve for `file://`** – der nettleseren blokkerer
-`fetch`, men tillater en vanlig `<script src>`. På http(s) (Cloudflare eller
-lokal server) blir `index.json` og hendelses-JSON-filene lest direkte, og
-tvillingene blir ikke brukt.
+`fetch`, men tillater en vanlig `<script src>`. På http(s) blir `index.json` og
+hendelses-JSON-filene lest direkte, og tvillingene blir ikke brukt.
 
 ---
 
@@ -78,128 +87,109 @@ cd nettsted
 git init
 git add .
 git commit -m "JETLOGG 704 - nettviser"
-```
-
-Lag repoet og push (bytt ut `<repo>`):
-
-```bash
-gh repo create <repo> --private --source=. --push
+git branch -M main
+gh repo create <repo> --public --source=. --push
 ```
 
 eller uten GitHub CLI:
 
 ```bash
 git remote add origin https://github.com/<bruker>/<repo>.git
-git branch -M main
 git push -u origin main
 ```
 
-Repoet kan være **privat**. Det skjuler kildekoden, men **ikke**
-publikasjonen: er siden først publisert, er den åpen for alle som har
-adressen, uansett hvem som har tilgang til repoet.
+Repoet **må være offentlig** for at GitHub Pages skal virke på gratiskontoen.
+Er det privat, svarer GitHub «Your current plan does not support GitHub Pages
+for this repository». Da må du enten oppgradere planen eller bruke
+Cloudflare Pages i steg 5.
 
 ---
 
-## 3. Publiser på Cloudflare Pages
+## 3. Slå på GitHub Pages
 
-Logg inn på <https://dash.cloudflare.com> → **Workers & Pages** →
-**Create** → **Pages**.
+**Via nettleseren:** repoet → **Settings** → **Pages** → under *Build and
+deployment*, sett **Source** til **Deploy from a branch**, velg **Branch:
+`main`** og mappa **`/ (root)`**, og lagre. Det er alt – ingen byggjekommando,
+ingen miljøvariabler.
 
-Navnet på prosjektet avgjør adressen: `<prosjektnavn>.pages.dev`.
-Eksempelet i dette repoet bruker `jetlogg-704` (samme navn som i
-`.github/workflows/deploy.yml`). Velg et navn og bruk det samme overalt.
+**Via kommandolinjen:**
 
-**Bygg-oppsett** (samme hvilken metode du velger i steg 4):
+```bash
+gh api -X POST repos/<bruker>/<repo>/pages \
+  -f "source[branch]=main" -f "source[path]=/"
+```
 
-| Innstilling | Verdi |
-|---|---|
-| Build command | *(la stå tomt)* |
-| Build output directory | `/` (rotmappa – siden ER rota) |
-| Root directory | `/` |
+Første publisering tar et par minutter. Adressen blir
 
-### 4a. Enkleste vei: koble Pages til GitHub-repoet
+```
+https://<bruker>.github.io/<repo>/
+```
 
-I steg 3: velg **Connect to Git**, gi Cloudflare tilgang til repoet, velg
-repoet og greina `main`, og bruk innstillingene over. Cloudflare bygger og
-publiserer selv ved hver push. Da trenger du **ikke** workflow-fila i det
-hele tatt, og heller ikke secrets (steg 5 kan hoppes over).
+for dette prosjektet altså
+<https://mgaaserud90-creator.github.io/jetlogg-704-nettviser/>.
 
-### 4b. Alternativ vei: publiser fra GitHub Actions (fila er alt laget)
-
-Workflow-fila ligger i `.github/workflows/deploy.yml` og bruker
-`cloudflare/wrangler-action@v4` med kommandoen
-`wrangler pages deploy . --project-name=jetlogg-704`.
-
-> **Om handlingen:** `cloudflare/pages-action` er **trukket tilbake og slettet
-> fra GitHub** (repoet svarer 404), så den må ikke brukes – workflows som
-> bruker den feiler alt ved oppstart. Cloudflares gjeldende oppskrift for
-> «Direct Upload med CI» er `cloudflare/wrangler-action` med
-> `wrangler pages deploy`. Er du i tvil om hva som er nyest, sjekk
-> <https://developers.cloudflare.com/pages/how-to/use-direct-upload-with-continuous-integration/>.
->
-> **Fremtidsvarsel:** Cloudflare har sagt at *Pages* blir avløst av
-> *Workers* for nye prosjekter. Pages virker fortsatt, men hvis du setter opp
-> noe helt nytt senere kan det være enklere å legge den statiske siden på
-> Workers i stedet.
-
-> **Om tokenet og `workflow`-scope:** GitHub nekter å ta imot ei fil under
-> `.github/workflows/` fra et token som ikke har `workflow`-scopet. Feilen
-> ser slik ut:
-> `refusing to allow an OAuth App to create or update workflow ... without 'workflow' scope`.
-> Har tokenet ikke scopet, kjør disse to kommandoene, så er den også ute:
->
-> ```bash
-> gh auth refresh -s workflow
-> cd nettsted
-> git push
-> ```
-
-Husk å bytte prosjektnavnet i `env: CLOUDFLARE_PROJECT_NAME` i workflow-fila
-hvis du valgte et annet navn enn `jetlogg-704`.
+Åpne adressen og skriv passordet. Ser du forsiden, er alt i orden.
 
 ---
 
-## 5. Secrets i GitHub (bare for 4b)
+## 4. Oppdatere siden senere
 
-Legg disse to inn under repoet → **Settings** → **Secrets and variables** →
-**Actions** → **New repository secret**:
+Alt du gjør, er å pushe til `main`:
 
-| Secret | Hvor du finner den |
-|---|---|
-| `CLOUDFLARE_API_TOKEN` | Cloudflare → **My Profile** → **API Tokens** → **Create Token** → malen **«Edit Cloudflare Workers»**, eller et eget token med rettighetene *Account → Cloudflare Pages → Edit*. Kopier tokenen med en gang – den blir bare vist én gang. |
-| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare-dashbordet → **Workers & Pages** → høyre side (Account ID), eller kommandoen `npx wrangler whoami`. |
+```bash
+git add -A
+git commit -m "Nye hendelser"
+git push
+```
 
-`GITHUB_TOKEN` trenger du ikke legge inn; det finnes i workflowen automatisk.
+GitHub Pages bygger og publiserer på nytt av seg selv, normalt i løpet av et
+minutt. Du kan følge det under **Actions** i repoet (arbeidsflyten heter
+`pages build and deployment`).
+
+Det er ingen hemmeligheter å holde styr på og ingen workflow-fil å vedlikeholde
+– GitHub har sin egen, innebygd.
+
+---
+
+## 5. Vil du heller bruke Cloudflare Pages? (valgfritt)
+
+GitHub Pages holder for dette. Vil du flytte siden til Cloudflare senere, er
+oppskriften denne:
+
+1. <https://dash.cloudflare.com> → **Workers & Pages** → **Create** → **Pages**
+   → koble til GitHub-repoet, velg greina `main`.
+2. **Build command:** *(tomt)*. **Build output directory:** `/`.
+   **Root directory:** `/`.
+3. Publiser. Da får du `<prosjektnavn>.pages.dev`.
+
+Merk at `cloudflare/pages-action` er **trukket tilbake og slettet fra GitHub**
+(repoet svarer 404), så en gammel workflow som bruker den feiler med en gang.
+Vil du publisere fra Actions i stedet for Git-integrasjonen, er
+`cloudflare/wrangler-action` med `wrangler pages deploy .` det som gjelder nå,
+og da trenger du secrets `CLOUDFLARE_API_TOKEN` og `CLOUDFLARE_ACCOUNT_ID`.
+Git-integrasjonen i punkt 1 krever ingenting av dette.
 
 ---
 
 ## 6. Vil du låse dataene likevel? (valgfritt, ikke gjort)
 
-Den åpne varianten i steg 0 er valgt med åpne øyne. Skulle du ombestemme deg,
-finnes det to måter å få passordet til å gjelde også for filene. Ingen av dem
-er satt opp i dette repoet.
+Den åpne varianten i steg 0 er valgt med åpne øyne. GitHub Pages kan ikke
+passordbeskytte noe, så skal passordet gjelde også for filene, må siden flyttes.
 
-**A. Cloudflare Access – e-post og engangskode før siden i det hele tatt vises.**
+**A. Cloudflare Pages + Cloudflare Access – e-post og engangskode før siden vises.**
 
-1. Cloudflare-dashbordet → **Zero Trust** → **Access** → **Applications**
-   → **Add an application** → **Self-hosted**.
-2. **Application domain:** legg inn Pages-domenet, f.eks.
-   `jetlogg-704.pages.dev`, og (hvis du har) et eget domene i tillegg.
-3. **Policy:** **Allow** med **Include → Emails**, og list opp **bare** de
-   e-postadressene som skal slippe inn. (Ikke bruk «Everyone».)
-4. Sett **session duration** (f.eks. 24 timer) og lagre.
-
-Da møter den som kjenner lenka en Cloudflare-side som ber om e-post, og får en
-**engangskode**. Alt skjer i Cloudflares nett *før* siden blir sendt til
-nettleseren. Test i et inkognito-vindu: du skal bli bedt om e-post, ikke få
-forsiden.
+Flytt siden til Cloudflare (steg 5) og sett opp:
+**Zero Trust** → **Access** → **Applications** → **Add an application** →
+**Self-hosted**, domene `ditt-prosjekt.pages.dev`, policy **Allow** med
+**Include → Emails** og bare de adressene som skal slippe inn. Da møter den som
+kjenner lenka en Cloudflare-side som ber om e-post og en **engangskode** – alt
+skjer i Cloudflares nett *før* siden blir sendt til nettleseren.
 
 **B. Én delt kode, sjekket på serversiden – Cloudflare Pages Function.**
 
-Legg en funksjon i `functions/data/[[sti]].js` som leser forespørselen, krever
-en cookie eller en header med den delte koden, og først da henter fila fra
-`data/`. Da ligger ikke JSON-filene som fritt tilgjengelige statiske filer
-lenger, og `fetch` i viseren må sende koden med. Dette krever litt arbeid i
+Legg en funksjon i `functions/data/[[sti]].js` som krever en cookie eller
+header med den delte koden og først da henter fila fra `data/`. Da er ikke
+JSON-filene fritt tilgjengelige statiske filer lenger. Det krever litt arbeid i
 `js/viser.js` også, siden den i dag henter `data/index.json` rett fra stien.
 Si fra om du vil ha det bygget.
 
@@ -207,9 +197,9 @@ Si fra om du vil ha det bygget.
 
 ## 7. Passordet på forsiden – dette er sperren
 
-Forsiden (`index.html`) har et passordfelt. Det er med vilje den eneste
-sperren på siden, og den fungerer slik operatøren vil: alle ser forsiden, den
-som kan passordet kommer videre. Se steg 0 for hva den gjør og ikke gjør.
+Forsiden (`index.html`) har et passordfelt. Det er med vilje den eneste sperren
+på siden, og den fungerer slik operatøren vil: alle ser forsiden, den som kan
+passordet kommer videre. Se steg 0 for hva den gjør og ikke gjør.
 
 Koden lagrer ikke passordet i klartekst, men **SHA-256-summen** av det
 (`index.html`, variabelen `PASSORD_SHA256`). Feltet sammenligner summer.
@@ -220,10 +210,10 @@ Koden lagrer ikke passordet i klartekst, men **SHA-256-summen** av det
 python -c "import hashlib;print(hashlib.sha256('NYTT_PASSORD'.encode('utf-8')).hexdigest())"
 ```
 
-Summen virker bare over `https://` eller på `localhost` (nettleseren krever
-en «secure context» for å regne SHA-256 i det hele tatt). Cloudflare Pages
-kjører på https, så det er greit. Også `file://` regnes som secure context i
-Chrome, så feltet virker der óg.
+Summen virker bare over `https://` eller på `localhost` (nettleseren krever en
+«secure context» for å regne SHA-256 i det hele tatt). GitHub Pages kjører på
+https, så det er greit. Også `file://` regnes som secure context i Chrome, så
+feltet virker der óg.
 
 ---
 
@@ -252,11 +242,7 @@ Chrome, så feltet virker der óg.
    `eksporter_hendelser.py` – kjør den, så blir `index.json` oppdatert.
    Den samme generatoren skriver også **JS-tvillingene** (`index.js` og et
    `<navn>.js` per hendelse) i samme slengen, så de ikke kan komme i utakt.
-3. Commit og push. Er Pages koblet til repoet (4a) eller workflowen kjører
-   (4b), er de nye filene ute i løpet av et minutt.
-
-Vil du raskt legge ut én fil uten å pushe, kan du bruke **Direct Upload** i
-Cloudflare-dashbordet eller `npx wrangler pages deploy . --project-name=jetlogg-704`.
+3. Commit og push. Siden er oppdatert i løpet av et minutt.
 
 ---
 
@@ -273,10 +259,10 @@ Cloudflare-dashbordet eller `npx wrangler pages deploy . --project-name=jetlogg-
     Fargede bruddmerker og stopplinjer (P1–P4 i sin egen farge, grått `‖` for
     uryddig), en komprimert tidsakse, og en fargestripe nederst som viser
     hvilke faser som teller med i lengde og snittfart.
-  - *Fullt*: hele hendelsen på en ubrutt tidsakse. Hver pause blir vist
-    som et **gjennomsiktig fargebånd over hele plottet – ett bånd per
-    pause**, i samme farge som pausen har i den klippede visningen og i fotnoten.
-    Uryddig-fasene blir vist som grå bånd.
+  - *Fullt*: hele hendelsen på en ubrutt tidsakse. Hver pause blir vist som et
+    **gjennomsiktig fargebånd over hele plottet – ett bånd per pause**, i samme
+    farge som pausen har i den klippede visningen og i fotnoten. Uryddig-fasene
+    blir vist som grå bånd.
 - **Rektangelzoom:** dra et rektangel i plottet for å zoome til området.
   Dobbeltklikk nullstiller, og knappen **Nullstill zoom** gjør det samme.
   Rulling zoomer.
@@ -284,25 +270,24 @@ Cloudflare-dashbordet eller `npx wrangler pages deploy . --project-name=jetlogg-
   står på skjermen – samme visning (Klippet/Fullt) og samme levende zoom – til
   et PNG, og åpner et nytt vindu med bildet, sammendraget og fotnotene klare
   for utskrift. Der ligger også en **Last ned PNG**-knapp for rein
-  bildeutskrift. Modebar-kameraet i plottet lager bildet direkte, med
-  filnavnet til hendelsen.
+  bildeutskrift. Modebar-kameraet i plottet lager bildet direkte, med filnavnet
+  til hendelsen.
 - **Fartstall:** fart-kurven er tatt bort. Igjen står **stigningstallene** som
   **bare tall** (`7,8`, ikke `7,8 cm/min`) øverst i plottet – ett tall per
-  seksjon som teller med, fordelt langs x-aksen. Enheten er forklart i
-  fotnoten. I sammendraget øverst står enheten fortsatt, siden det er en
-  tekstlesing og ikke en merking i plottet.
-- **Fotnote:** én rad per pause i pausens egen farge, med nummer,
-  varighet, klokke og dybde ved stopp, klokke og dybde ved start, lengde,
-  endring i dybde med fortegn, og grunn. Under en fasetabell som viser
-  hvilke faser som teller med i lengde og snittfart.
+  seksjon som teller med, fordelt langs x-aksen. Enheten er forklart i fotnoten.
+  I sammendraget øverst står enheten fortsatt, siden det er en tekstlesing og
+  ikke en merking i plottet.
+- **Fotnote:** én rad per pause i pausens egen farge, med nummer, varighet,
+  klokke og dybde ved stopp, klokke og dybde ved start, lengde, endring i dybde
+  med fortegn, og grunn. Under en fasetabell som viser hvilke faser som teller
+  med i lengde og snittfart.
 - **Tallene** er skrevet med norsk tallformat (komma som desimaltegn).
 - Firmalogoen ligger som et svakt vannmerke bak kurvene.
 
 Vil du åpne en hendelse direkte, kan du bruke
 `viser.html?fil=2026-10-01_K83_grouting.json&vis=fullt`
-(`fil` velger hendelse, `vis` velger `klippet` eller `fullt`).
-Da må siden kjøres fra en server, fra Cloudflare eller som lokal fil med
-JS-tvillingene ved siden av (den virker også på `file://`).
+(`fil` velger hendelse, `vis` velger `klippet` eller `fullt`). Det virker både
+på GitHub Pages og lokalt.
 
 ---
 
@@ -317,23 +302,25 @@ python -m http.server 8788
 `?fil=`-parameteren, og alle JSON-filene blir lest direkte.
 
 Siden virker også når den blir åpnet **direkte fra disken** (`file://`). Da
-blokkerer nettleseren `fetch`, men `data/index.js` og `data/<navn>.js` er
-lastet som vanlige skript, så nedtrekket blir fylt og hendelsene blir vist
-fra de innebygde tvillingene. Det kommer da et lite hint om dette over
-plottet. Denne veien er en **reserve** – den vanlige veien er server eller
-Cloudflare, der JSON-filene blir lest direkte.
+blokkerer nettleseren `fetch`, men `data/index.js` og `data/<navn>.js` er lastet
+som vanlige skript, så nedtrekket blir fylt og hendelsene blir vist fra de
+innebygde tvillingene. Det kommer da et lite hint om dette over plottet. Denne
+veien er en reserve – den vanlige veien er GitHub Pages eller en lokal server,
+der JSON-filene blir lest direkte.
 
 ---
 
-## 11. Sjekkliste før du deler lenka
+## 11. Sjekkliste
 
-- [ ] Pages-prosjektet er opprettet og publiserer fra `main`.
-- [ ] Du har åpnet adressa selv og sett at forsiden kommer opp.
-- [ ] Passordet på forsiden virker (og er byttet om du vil ha et annet enn
-      det som står i `PASSORD_SHA256` nå).
+- [x] Repoet er offentlig, og GitHub Pages publiserer fra `main` / rot.
+- [x] `.nojekyll` ligger i rota.
+- [x] Adressa er åpnet og forsiden kommer opp.
+- [x] Passordet på forsiden virker (`PASSORD_SHA256` i `index.html`).
 - [ ] Du er klar over at datafilene under `data/` er lesbare for den som
-      kjenner filnavnet, uten passord. Dette er valgt med vilje – se steg 0.
+      kjenner filnavnet, uten passord, og at de også ligger i det offentlige
+      repoet. Dette er valgt med vilje – se steg 0.
 - [ ] Vil du ikke det likevel: steg 6.
 
 Er du i tvil om du bør dele lenka bredt: alt som ligger under `data/` blir
-tilgjengelig for den som får tak i et filnavn.
+tilgjengelig for den som får tak i et filnavn, og søkemotorer kan finne det av
+seg selv.
