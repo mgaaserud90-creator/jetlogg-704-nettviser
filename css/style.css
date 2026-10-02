@@ -238,3 +238,19 @@ button, .knapp {
   #plott { min-height: 520px; }
   .kort { padding: 26px 22px; }
 }
+
+/* ---------- utskrift av sjolve sida ----------
+   Skjuler kontrollepanelet og det som berre hoyrer skjermen til, slik at
+   plott, samandrag og tabellar kjem ryddig ut pa papir. Knappen «Skriv ut /
+   lagre bilete» opnar i tillegg eit eige vindauge med biletet i den
+   visinga og den zoominga som star pa skjermen. */
+@media print {
+  .kontroller,
+  #dropsone,
+  .topp a.tilbake { display: none !important; }
+  .topp { background: #fff; color: #1d2430; }
+  .topp .merke { border: 1px solid var(--kant); }
+  .plottramme { padding: 0; }
+  .tabell th { position: static; }
+  .tabell { page-break-inside: avoid; }
+}

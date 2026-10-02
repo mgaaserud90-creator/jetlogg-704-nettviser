@@ -60,6 +60,9 @@
         <button type="button" class="knapp-enkel" id="kn-nullstill">
           Nullstill zoom
         </button>
+        <button type="button" class="knapp-enkel" id="kn-print">
+          Skriv ut / lagre bilete
+        </button>
         <button type="button" class="knapp-enkel" id="kn-fil">
           Apne JSON-fil
         </button>
@@ -99,6 +102,10 @@
 <div id="dropsone">Slepp JSON-fila her</div>
 
 <script src="https://cdn.plot.ly/plotly-3.5.0.min.js" charset="utf-8"></script>
+<!-- data/index.js er JS-tvillinga til data/index.json. Ho er laga av den
+     same generatoren, og trengst berre som reserve nar sida blir opna som
+     lokal fil (file://), der nettlesaren blokkerer fetch. -->
+<script src="data/index.js"></script>
 <script src="js/viser.js"></script>
 </body>
 </html>

@@ -43,13 +43,24 @@ Nettstedet er **repo-rota**. Det vil seie at innhaldet i denne mappa
 │   ├── 2026-10-01_K83_pilotboring.json
 │   ├── 2026-10-01_K83_prejet.json
 │   ├── 2026-10-01_K87_grouting.json
-│   └── _alle_2026-10-01.json        (kombinert fil – ikkje i nedtrekksmenyen)
+│   ├── _alle_2026-10-01.json        (kombinert fil – ikkje i nedtrekksmenyen)
+│   ├── index.js        JS-tvilling av index.json (reserve for file://)
+│   └── <navn>.js       JS-tvilling av kvar hendelses-JSON (same reserve)
 └── .github/workflows/deploy.yml     automatisert publisering (valfri, sjaa 4b)
 ```
 
 Plottbiblioteket blir henta fra CDN, **versjon pinnet til `plotly.js v3.5.0`**
 (`https://cdn.plot.ly/plotly-3.5.0.min.js` i `viser.html`). Ingenting blir
 bygga; Cloudflare serverer filene som dei er.
+
+Kvar JSON-fil har ein liten **JS-tvilling** ved sida av seg (`index.js`,
+`<navn>.js`). Tvillingane inneheld nøyaktig den same JSON-en, berre pakka inn
+i `window.JETLOGG_INDEKS` / `window.JETLOGG_HENDELSE[...]`. Dei blir skrivne av
+den same generatoren som lagar `index.json`, slik at dei aldri kan kome i
+utakt, og dei er berre ein **reserve for `file://`** – der nettlesaren blokkerer
+`fetch`, men tillèt ein vanleg `<script src>`. Pa http(s) (Cloudflare eller
+lokal tenar) blir `index.json` og hendelses-JSON-filene lesne direkte, og
+tvillingane blir ikkje brukte.
 
 ---
 
@@ -127,8 +138,7 @@ Workflow-fila ligg i `.github/workflows/deploy.yml` og brukar
 > `.github/workflows/` fra eit token som ikkje har `workflow`-scopet. Feilen
 > ser slik ut:
 > `refusing to allow an OAuth App to create or update workflow ... without 'workflow' scope`.
-> Repoet er alt oppretta og resten av nettstedet er pusht; berre workflow-fila
-> manglar pa GitHub. Køyr desse to kommandoane, sa er ho ogsa ute:
+> Har tokenet ikkje scopet, køyr desse to kommandoane, sa er ho ogsa ute:
 >
 > ```bash
 > gh auth refresh -s workflow
@@ -226,6 +236,8 @@ køyrer pa https, sa det er greitt; opnar du `index.html` som lokal fil
    Felta nedtrekksmenyen brukar er `fil`, `dato`, `pel`, `metode`,
    `lengde_cm` og `stopp`. Nye hendelser blir oftast skrivne ut av
    `eksporter_hendelser.py` – køyr den, sa blir `index.json` oppdatert.
+   Den same generatoren skriv ogsa **JS-tvillingane** (`index.js` og eit
+   `<navn>.js` per hendelse) i same slengen, sa dei ikkje kan kome i utakt.
 3. Commit og push. Er Pages kopla til repoet (4a) eller workflowen køyrer
    (4b), er dei nye filene ute i lopet av eit minutt.
 
@@ -254,10 +266,17 @@ Cloudflare-dashbordet eller `npx wrangler pages deploy . --project-name=jetlogg-
 - **Rektangelzoom:** dra eit rektangel i plottet for a zoome til omradet.
   Dobbeltklikk nullstiller, og knappen **Nullstill zoom** gjer det same.
   Rulling zoomer.
-- **Fartstal:** i plottet star farten som **berre tal** (`7,8`, ikkje
-  `7,8 cm/min`) – eininga er forklart i fotnoten. Det gjer plottet rolegare.
-  I samandraget overst star eininga framleis, sidan det er ein tekstlesnad
-  og ikkje ei merking i plottet.
+- **Skriv ut / lagre bilete:** knappen under «Anna» renderar den figuren som
+  star pa skjermen – same vising (Klippet/Fullt) og same levande zoom – til
+  eit PNG, og opnar eit nytt vindauge med biletet, samandraget og fotnotane
+  klare for utskrift. Der ligg ogsa ein **Last ned PNG**-knapp for ei rein
+  bildeutskrift. Modebar-kameraet i plottet lagar biletet direkte, med
+  filnamnet til hendelsen.
+- **Fartstal:** fart-kurven er teken bort. Att star **stigningstala** som
+  **berre tal** (`7,8`, ikkje `7,8 cm/min`) overst i plottet – eitt tal per
+  seksjon som tel med, fordelt langs x-aksen. Eininga er forklart i
+  fotnoten. I samandraget overst star eininga framleis, sidan det er ein
+  tekstlesnad og ikkje ei merking i plottet.
 - **Fotnote:** éi rad per pause i pausen sin eigen farge, med nummer,
   varighet, klokke og djupne ved stopp, klokke og djupne ved start, lengd,
   endring i djupne med forteikn, og grunn. Under ein fasetabell som viser
@@ -268,7 +287,8 @@ Cloudflare-dashbordet eller `npx wrangler pages deploy . --project-name=jetlogg-
 Vil du opne ei hendelse direkte, kan du bruke
 `viser.html?fil=2026-10-01_K83_grouting.json&vis=fullt`
 (`fil` vel hendelse, `vis` vel `klippet` eller `fullt`).
-Sida ma da køyrast fra ein tenar eller fra Cloudflare – ikkje fra `file://`.
+Da ma sida køyrast fra ein tenar, fra Cloudflare eller som lokal fil med
+JS-tvillingane ved sida (ho verkar ogsa pa `file://`).
 
 ---
 
@@ -280,9 +300,14 @@ python -m http.server 8788
 ```
 
 Opne <http://localhost:8788/>. Da verkar nedtrekksmenyen, soket og
-`?fil=`-parameteren. Opnar du `index.html` direkte fra disken
-(`file://`), blokkerer nettlesaren lesing av nabofilene; da star berre
-**Apne JSON-fil** og drag-og-slipp att.
+`?fil=`-parameteren, og alle JSON-filene blir lesne direkte.
+
+Sida verkar og nar ho blir opna **direkte fra disken** (`file://`). Da
+blokkerer nettlesaren `fetch`, men `data/index.js` og `data/<navn>.js` er
+lasta som vanlege skript, sa nedtrekket blir fylt og hendelsene blir viste
+fra dei innebygde tvillingane. Det kjem da eit lite hint om dette over
+plottet. Denne vegen er ein **reserve** – den vanlege vegen er tenar eller
+Cloudflare, der JSON-filene blir lesne direkte.
 
 ---
 

@@ -17,7 +17,6 @@
   var LOGO = "logo/Seabrokers_Dolomiti_RGB.svg";
   var FARGAR = {
     dybde: "#a052ad",
-    fart: "#444444",
     uryddig: "#8c8c8c"
   };
 
@@ -80,27 +79,6 @@
   function feil(t) { melding("<b>" + t + "</b>", "feil"); }
   function skjulMelding() {
     document.getElementById("melding").style.display = "none";
-  }
-
-  /* Fartsprofil i cm/min, positiv = stanga gar OPP. Lett median-glatta. */
-  function fartsprofil(t, y) {
-    var n = t.length, raa = new Array(n);
-    for (var i = 1; i < n; i++) {
-      var dt = t[i] - t[i - 1];
-      if (dt > 0 && y[i] !== null && y[i - 1] !== null) {
-        raa[i] = -(y[i] - y[i - 1]) / dt * 60;
-      } else { raa[i] = null; }
-    }
-    raa[0] = (raa[1] === null || raa[1] === undefined) ? 0 : raa[1];
-    return raa.map(function (_v, i) {
-      var vinn = [];
-      for (var k = Math.max(0, i - 2); k <= Math.min(n - 1, i + 2); k++) {
-        if (raa[k] !== null && isFinite(raa[k])) { vinn.push(raa[k]); }
-      }
-      if (!vinn.length) { return null; }
-      vinn.sort(function (a, b) { return a - b; });
-      return vinn[Math.floor(vinn.length / 2)];
-    });
   }
 
   /* Teller fasen med i lengde og snittfart? Same regel som verktoyet. */
@@ -218,15 +196,6 @@
           + ": %{y:.2f}<extra></extra>"
       });
     });
-    var fart = fartsprofil(keep.map(function (i) { return t[i]; }),
-                           keep.map(function (i) { return dybde[i]; }));
-    var speed_axis = kanaler.length + 2;              /* siste hogreakse */
-    traces.push({
-      x: xs, y: fart, name: "Fart", mode: "lines",
-      line: { color: FARGAR.fart, width: 1, dash: "dot" }, yaxis: "y" + speed_axis,
-      customdata: klokker,
-      hovertemplate: "%{customdata} &middot; Fart %{y:.2f} cm/min<extra></extra>"
-    });
 
     /* -- pausane: markor med heile fotnoten i hover ------------------- */
     stopp.forEach(function (st) {
@@ -328,7 +297,7 @@
     });
 
     /* -- akser -------------------------------------------------------- */
-    var antall_hoyre = kanaler.length + 1;
+    var antall_hoyre = kanaler.length;
     var BR = Math.min(0.62, Math.max(0.30, 0.058 * antall_hoyre));
     var tv = tikkar(keep, t, base, klippet, kutt);
 
@@ -373,19 +342,6 @@
         position: (1 - BR) + BR * (n + 0.5) / antall_hoyre
       };
     });
-    var gs = Math.max(1, Math.max.apply(null,
-      fart.filter(function (v) { return v !== null && isFinite(v); })
-          .map(function (v) { return Math.abs(v); })) * 1.15);
-    layout["yaxis" + speed_axis] = {
-      /* BARE "Fart" – eininga cm/min star i fotnoten. */
-      title: { text: "Fart", font: { color: FARGAR.fart } },
-      range: [-gs, gs], tickfont: { color: FARGAR.fart, size: 10 },
-      overlaying: "y", side: "right", anchor: "free", showgrid: false,
-      zeroline: true, zerolinecolor: "#cfd6de",
-      ticks: "outside", ticklen: 4, tickcolor: FARGAR.fart,
-      showline: true, linecolor: FARGAR.fart,
-      position: (1 - BR) + BR * (kanaler.length + 0.5) / antall_hoyre
-    };
 
     Plotly.react("plott", traces, layout, {
       responsive: true, displaylogo: false, scrollZoom: true,
@@ -394,7 +350,7 @@
     });
     Plotly.Plots.resize(document.getElementById("plott"));
 
-    skrivSamandrag(d, kutt, t, klippet, gs);
+    skrivSamandrag(d, kutt, t, klippet);
     skrivStopptabell(d, base);
     skrivFasetabell(d);
   }
@@ -444,7 +400,7 @@
   }
 
   /* -- samandrag overst --------------------------------------------- */
-  function skrivSamandrag(d, kutt, t, klippet, gs) {
+  function skrivSamandrag(d, kutt, t, klippet) {
     var stopp = d.stopp_perioder || [];
     var retning = (d.retning === "ned") ? "ned" : "opp";
 
@@ -549,6 +505,94 @@
         }).join("") + "</table></div>";
   }
 
+  /* -- skriv ut / lagre biletet som star pa skjermen ----------------- */
+
+  function biletetekst() {
+    return valgtFil ? valgtFil.replace(/\.json$/i, "")
+      : (gjeldende && gjeldende.pel ? gjeldende.pel : "hendelse");
+  }
+
+  /* Opnar eit nytt vindauge med biletet, samandraget og fotnotane, og
+     ber nettlesaren skrive det ut. Same innhald som tabellane pa sida. */
+  function opneUtskriftsvindauge(dataUrl) {
+    var w = window.open("", "_blank");
+    if (!w) {
+      feil("Nettlesaren blokkerte utskriftsvindauget. Tillat oppsprett "
+        + "for denne sida og prov att.");
+      return;
+    }
+    var sum = document.getElementById("oppsummering").innerHTML;
+    var stopp = document.getElementById("stopptabell").innerHTML;
+    var faser = document.getElementById("seksjonstabell").innerHTML;
+    var vising = (modus === "klippet") ? "Klippet" : "Fullt";
+    var namn = biletetekst();
+    var html =
+      '<!DOCTYPE html><html lang="nb"><head><meta charset="utf-8">'
+      + '<title>JETLOGG 704 \u2013 ' + esc(namn) + '</title><style>'
+      + 'body{font-family:"Segoe UI",Arial,sans-serif;margin:14px;color:#1d2430;}'
+      + 'h1{font-size:16px;margin:0 0 6px;color:#00325f;}'
+      + '.samandrag{font-size:12.5px;margin:0 0 10px;}'
+      + '.samandrag .fakta{display:inline-block;margin-right:14px;margin-bottom:2px;}'
+      + 'img{max-width:100%;border:1px solid #d7dee7;}'
+      + '.tabell{font-size:11.5px;}'
+      + '.tabell h3{font-size:13px;margin:12px 0 5px;}'
+      + '.tabell table{border-collapse:collapse;width:100%;}'
+      + '.tabell th,.tabell td{border:1px solid #d7dee7;padding:3px 6px;text-align:left;}'
+      + '.tabell th{background:#f3f6fa;}'
+      + '.fargeprikk{display:inline-block;width:9px;height:9px;margin-right:5px;border-radius:2px;}'
+      + '.verktoystolpe{margin:0 0 10px;}'
+      + '.verktoystolpe button{font:inherit;padding:7px 12px;border:1px solid #004996;background:#fff;color:#004996;border-radius:6px;font-weight:600;cursor:pointer;}'
+      + '.forklaring{color:#5b6877;font-size:12px;}'
+      + '@media print{.verktoystolpe{display:none;} body{margin:0;}}'
+      + '</style></head><body>'
+      + '<h1>JETLOGG 704 \u2013 ' + esc(namn) + ' (' + esc(vising) + ')</h1>'
+      + '<div class="verktoystolpe">'
+      + '<button type="button" id="lagre-png">Last ned PNG</button> '
+      + '<span class="forklaring">eller bruk Ctrl+P / Cmd+P for \u00e5 skrive ut.</span>'
+      + '</div>'
+      + '<div class="samandrag">' + sum + '</div>'
+      + '<img id="bilete" alt="Plott: ' + esc(namn) + '" src="' + dataUrl + '">'
+      + '<div class="tabell">' + stopp + faser + '</div>'
+      + '</body></html>';
+    w.document.open();
+    w.document.write(html);
+    w.document.close();
+    var img = w.document.getElementById("bilete");
+    var lagre = w.document.getElementById("lagre-png");
+    if (lagre) {
+      lagre.addEventListener("click", function () {
+        var a = w.document.createElement("a");
+        a.href = dataUrl;
+        a.download = namn + ".png";
+        w.document.body.appendChild(a);
+        a.click();
+      });
+    }
+    function skriv() { try { w.focus(); w.print(); } catch (e) {} }
+    if (img && !img.complete) { img.addEventListener("load", skriv); }
+    else { skriv(); }
+  }
+
+  /* Renderar den AKTIVE figuren – same vising (klippet/fullt) og same
+     levande zoom som star pa skjermen. Plotly.toImage les den gjeldande
+     layouten, sa eventuell rektangel-/rullezoom blir med i biletet. */
+  function eksporterAktiv() {
+    if (!gjeldende) {
+      feil("Ingen hendelse er lasta \u2013 vel ei hendelse fyrst.");
+      return;
+    }
+    var gd = document.getElementById("plott");
+    var namn = biletetekst();
+    var breidd = gd.clientWidth || 1000;
+    var hogd = gd.clientHeight || 640;
+    Plotly.toImage(gd, { format: "png", width: breidd, height: hogd, scale: 2 })
+      .then(function (dataUrl) { opneUtskriftsvindauge(dataUrl); })
+      .catch(function (err) {
+        feil("Klarte ikkje lage biletet: "
+          + esc(err && err.message ? err.message : err));
+      });
+  }
+
   /* ------------------------------------------------------------------ 5) */
 
   function etikett(h) {
@@ -606,6 +650,31 @@
     }
   }
 
+  /* JS-tvillingane: data/index.js legg JETLOGG_INDEKS i window, og
+     data/<navn>.js legg kvar hendelse i window.JETLOGG_HENDELSE. Dei kan
+     lastast med ein vanleg <script src>, som OGSAA er lovleg pa file://,
+     der nettlesaren elles blokkerer fetch. */
+  function hendelseGlobal(navn) {
+    return (window.JETLOGG_HENDELSE && window.JETLOGG_HENDELSE[navn]) || null;
+  }
+
+  function visHendelseFraGlobal(navn, vedFeil) {
+    var d = hendelseGlobal(navn);
+    if (d) { lesTekst(JSON.stringify(d), navn); return; }
+    /* Tvillinga er ikkje lasta enno – hent ho med ein <script src>. */
+    var s = document.createElement("script");
+    s.src = DATA + navn.replace(/\.json$/i, ".js");
+    s.onload = function () {
+      var d2 = hendelseGlobal(navn);
+      if (d2) { lesTekst(JSON.stringify(d2), navn); }
+      else { vedFeil("fann ikkje \u00ab" + navn + "\u00bb i dei innebygde dataene"); }
+    };
+    s.onerror = function () {
+      vedFeil("fann korkje fila eller JS-tvillinga hennar");
+    };
+    document.head.appendChild(s);
+  }
+
   function hentOgVis(navn) {
     valgtFil = navn;
     fetch(DATA + navn, { cache: "no-store" }).then(function (r) {
@@ -613,7 +682,11 @@
       return r.text();
     }).then(function (txt) { lesTekst(txt, navn); })
       .catch(function (err) {
-        feil("Klarte ikkje hente \u00ab" + esc(navn) + "\u00bb (" + err.message + ").");
+        /* fetch kan vere blokkert (typisk file://) – prov JS-tvillinga. */
+        visHendelseFraGlobal(navn, function (melding) {
+          feil("Klarte ikkje hente \u00ab" + esc(navn) + "\u00bb ("
+            + esc(melding || err.message) + ").");
+        });
       });
   }
 
@@ -648,36 +721,49 @@
     b.style.display = "block";
   }
 
+  function taImotIndeks(data) {
+    indeks = (data && data.hendelser) || [];
+    fyllListe();
+    var fraUrl = /[?&]fil=([^&]+)/.exec(window.location.search);
+    if (fraUrl) {
+      valgtFil = decodeURIComponent(fraUrl[1]);
+      document.getElementById("velg").value = valgtFil;
+      hentOgVis(valgtFil);
+      return;
+    }
+    /* Vis forste hendelse med ein gong, sa ein ser noko med det same. */
+    var forste = indeks.filter(function (h) { return !h.kombinert; })[0];
+    if (forste) {
+      document.getElementById("velg").value = forste.fil;
+      hentOgVis(forste.fil);
+    }
+  }
+
   function lastIndeks() {
     fetch(DATA + "index.json", { cache: "no-store" }).then(function (r) {
       if (!r.ok) { throw new Error("HTTP " + r.status); }
       return r.json();
-    }).then(function (data) {
-      indeks = (data && data.hendelser) || [];
-      fyllListe();
-      var fraUrl = /[?&]fil=([^&]+)/.exec(window.location.search);
-      if (fraUrl) {
-        valgtFil = decodeURIComponent(fraUrl[1]);
-        document.getElementById("velg").value = valgtFil;
-        hentOgVis(valgtFil);
-        return;
-      }
-      /* Vis forste hendelse med ein gong, sa ein ser noko med det same. */
-      var forste = indeks.filter(function (h) { return !h.kombinert; })[0];
-      if (forste) {
-        document.getElementById("velg").value = forste.fil;
-        hentOgVis(forste.fil);
-      }
-    }).catch(function (err) {
-      document.getElementById("velg").innerHTML =
-        '<option value="">(hendelseslista er ikkje tilgjengeleg)</option>';
-      visIndekshint("<b>Hendelseslista kunne ikkje lastast.</b> Ho krev at "
-        + "sida blir koyrd fra ein liten lokal server eller fra "
-        + "Cloudflare \u2013 ikkje fra <code>file://</code>, der nettlesaren "
-        + "blokkerer lesing av nabofilene. Du kan framleis dra og sleppe ei "
-        + "JSON-fil hit eller bruke \u00abOpne JSON-fil\u00bb. ("
-        + esc(err.message) + ")");
-    });
+    }).then(function (data) { taImotIndeks(data); })
+      .catch(function (err) {
+        /* fetch er blokkert pa file://. data/index.js er lasta med ein
+           vanleg <script src> og ligg i window.JETLOGG_INDEKS. Da verkar
+           nedtrekket og den fyrste hendelsen utan nokon tenar. */
+        if (window.JETLOGG_INDEKS) {
+          taImotIndeks(window.JETLOGG_INDEKS);
+          visIndekshint("Nedtrekkslista er lesen fra den innebygde "
+            + "<code>data/index.js</code> (sida er opna som lokal fil, der "
+            + "nettlesaren ikkje l\u00e5t oss hente <code>data/index.json</code> "
+            + "direkte). Alt verkar som normalt.");
+          return;
+        }
+        document.getElementById("velg").innerHTML =
+          '<option value="">(hendelseslista er ikkje tilgjengeleg)</option>';
+        visIndekshint("<b>Hendelseslista kunne ikkje lastast.</b> Ho krev at "
+          + "sida blir koyrd fra ein liten lokal server eller fra "
+          + "Cloudflare \u2013 eller at <code>data/index.js</code> ligg ved "
+          + "sida. Du kan framleis dra og sleppe ei JSON-fil hit eller bruke "
+          + "\u00abOpne JSON-fil\u00bb. (" + esc(err.message) + ")");
+      });
   }
 
   /* -- kopling av hendingar ----------------------------------------- */
@@ -702,6 +788,7 @@
   document.getElementById("kn-nullstill").addEventListener("click", function () {
     if (gjeldende) { tegn(gjeldende, modus); }
   });
+  document.getElementById("kn-print").addEventListener("click", eksporterAktiv);
 
   window.addEventListener("dragover", function (e) {
     e.preventDefault();
