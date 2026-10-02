@@ -1,8 +1,8 @@
 /* ============================================================================
-   JETLOGG 704 – nettvisar
-   Stilar for framside (index.html) og visar (viser.html).
-   Fargar henta fra Seabrokers Dolomiti-logoen: #004996 (mork bla) og
-   #00B4E3 (lys bla). Alt i nynorsk-noytral bokmal, lesbart pa skjerm.
+   JETLOGG 704 – nettviser
+   Stiler for forside (index.html) og viser (viser.html).
+   Farger hentet fra Seabrokers Dolomiti-logoen: #004996 (mørk blå) og
+   #00B4E3 (lys blå). Alt i nøytralt bokmål, lesbart på skjerm.
    ========================================================================== */
 
 :root {
@@ -58,7 +58,7 @@ a { color: var(--bla); }
                   padding: 5px 10px; }
 .topp a.tilbake:hover { background: rgba(255,255,255,.14); }
 
-/* ---------- framsida ---------- */
+/* ---------- forsiden ---------- */
 .inngang {
   min-height: 100vh;
   display: flex;
@@ -140,7 +140,7 @@ button, .knapp {
 .bunnlinje { font-size: 12px; color: var(--graa); margin-top: 22px;
              border-top: 1px solid var(--kant); padding-top: 12px; }
 
-/* ---------- visaren: kontrollpanel ---------- */
+/* ---------- viseren: kontrollpanel ---------- */
 .kontroller {
   background: #fff;
   border-bottom: 1px solid var(--kant);
@@ -163,7 +163,7 @@ button, .knapp {
 .treff { font-size: 12.5px; color: var(--graa); min-height: 18px; }
 .treff.tom { color: var(--raud); font-weight: 600; }
 
-/* bolk-bytte (Klippet / Fullt) */
+/* bryter (Klippet / Fullt) */
 .bolk { display: inline-flex; border: 1px solid var(--bla); border-radius: 6px;
         overflow: hidden; }
 .bolk button {
@@ -176,7 +176,7 @@ button, .knapp {
 
 .dykk { display: inline-flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 
-/* ---------- samandrag ---------- */
+/* ---------- sammendrag ---------- */
 .samandrag {
   padding: 10px 20px;
   font-size: 13.5px;
@@ -187,7 +187,7 @@ button, .knapp {
                     white-space: nowrap; }
 .samandrag .fakta b { font-weight: 700; color: #22303f; }
 
-/* ---------- meldingar / hint ---------- */
+/* ---------- meldinger / hint ---------- */
 .ramme {
   border: 1px solid var(--kant);
   border-radius: 6px;
@@ -205,7 +205,7 @@ button, .knapp {
 .plottramme { padding: 0 20px; }
 #plott { width: 100%; min-height: 640px; }
 
-/* ---------- tabellar / fotnote ---------- */
+/* ---------- tabeller / fotnote ---------- */
 .tabell { padding: 6px 20px 20px; font-size: 12.5px; }
 .tabell h3 { font-size: 13.5px; margin: 16px 0 7px; color: #22303f; }
 .tabell .forklaring { font-size: 12.2px; color: var(--graa); margin: 0 0 8px; }
@@ -230,7 +230,7 @@ button, .knapp {
 }
 #dropsone.paa { display: flex; }
 
-/* ---------- botn ---------- */
+/* ---------- bunn ---------- */
 .botn { padding: 18px 20px 30px; font-size: 12px; color: var(--graa); }
 
 @media (max-width: 900px) {
@@ -239,11 +239,11 @@ button, .knapp {
   .kort { padding: 26px 22px; }
 }
 
-/* ---------- utskrift av sjolve sida ----------
-   Skjuler kontrollepanelet og det som berre hoyrer skjermen til, slik at
-   plott, samandrag og tabellar kjem ryddig ut pa papir. Knappen «Skriv ut /
-   lagre bilete» opnar i tillegg eit eige vindauge med biletet i den
-   visinga og den zoominga som star pa skjermen. */
+/* ---------- utskrift av selve siden ----------
+   Skjuler kontrollpanelet og det som bare hører skjermen til, slik at
+   plott, sammendrag og tabeller kommer ryddig ut på papir. Knappen «Skriv ut /
+   lagre bilde» åpner i tillegg et eget vindu med bildet i den visningen og
+   den zoomingen som står på skjermen. */
 @media print {
   .kontroller,
   #dropsone,

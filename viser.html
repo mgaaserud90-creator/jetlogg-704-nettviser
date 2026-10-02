@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <!--
-  viser.html – sjolve hendelsesviseren.
+  viser.html – selve hendelsesviseren.
 
-  Viser éi hendelse om gongen, valt fra nedtrekksmenyen (bygd fra
-  data/index.json), sokefeltet, filveljaren eller drag-og-slipp.
+  Viser én hendelse om gangen, valgt fra nedtrekksmenyen (bygd fra
+  data/index.json), søkefeltet, filvelgeren eller drag-og-slipp.
 
-  To visingar:
-    Klippet (standard) – pausar og uryddig-faser er tekne ut av x-aksen,
-                         med bruddmerke, farga stopplinjer og komprimert akse.
-    Fullt              – heile hendelsen pa ein ubroten tidsakse, med kvar
-                         pause som eit gjennomsiktig fargaband.
+  To visninger:
+    Klippet (standard) – pauser og uryddig-faser er tatt ut av x-aksen,
+                         med bruddmerker, fargede stopplinjer og komprimert akse.
+    Fullt              – hele hendelsen på en ubrutt tidsakse, med hver
+                         pause som et gjennomsiktig fargebånd.
 
-  plotly.js blir henta fra CDN, versjon pinnet (3.5.0) – sjå README.md.
+  plotly.js blir hentet fra CDN, versjon pinnet (3.5.0) – se README.md.
 -->
 <html lang="nb">
 <head>
@@ -28,43 +28,43 @@
         alt="Seabrokers Dolomiti"></span>
   <div>
     <h1>JETLOGG 704 &ndash; hendelsesviser</h1>
-    <p class="undertittel">Peledata fra riggen &ndash; klipt og fullt tidsforlop</p>
+    <p class="undertittel">Peledata fra riggen &ndash; klippet og fullt tidsforløp</p>
   </div>
   <span class="plass"></span>
-  <a class="tilbake" href="index.html">Til framsida</a>
+  <a class="tilbake" href="index.html">Til forsiden</a>
 </header>
 
 <div class="kontroller">
   <div class="rad">
     <div class="gruppe grow">
-      <label for="sok">Sok pa pel, metode eller dato</label>
-      <input type="search" id="sok" placeholder="t.d. K83, 83, grouting, 2026-10-01">
+      <label for="sok">Søk på pel, metode eller dato</label>
+      <input type="search" id="sok" placeholder="f.eks. K83, 83, grouting, 2026-10-01">
       <span class="treff" id="treff"></span>
     </div>
     <div class="gruppe grow">
       <label for="velg">Hendelse</label>
       <select id="velg" class="velg">
-        <option value="">Lastar hendelsesliste &hellip;</option>
+        <option value="">Laster hendelsesliste &hellip;</option>
       </select>
     </div>
     <div class="gruppe">
-      <label for="bolk">Vising</label>
-      <div class="bolk" id="bolk" role="group" aria-label="Vising av plottet">
+      <label for="bolk">Visning</label>
+      <div class="bolk" id="bolk" role="group" aria-label="Visning av plottet">
         <button type="button" id="kn-klippet" aria-pressed="true">Klippet</button>
         <button type="button" id="kn-fullt" aria-pressed="false">Fullt</button>
       </div>
     </div>
     <div class="gruppe">
-      <label>Anna</label>
+      <label>Annet</label>
       <div class="dykk">
         <button type="button" class="knapp-enkel" id="kn-nullstill">
           Nullstill zoom
         </button>
         <button type="button" class="knapp-enkel" id="kn-print">
-          Skriv ut / lagre bilete
+          Skriv ut / lagre bilde
         </button>
         <button type="button" class="knapp-enkel" id="kn-fil">
-          Apne JSON-fil
+          Åpne JSON-fil
         </button>
         <input type="file" id="fil" accept=".json,application/json" hidden>
       </div>
@@ -72,9 +72,9 @@
   </div>
   <div class="rad">
     <span class="merkelapp">
-      Dra eit rektangel i plottet for &aring; zoome &middot; dobbeltklikk for
+      Dra et rektangel i plottet for &aring; zoome &middot; dobbeltklikk for
       &aring; nullstille &middot; rull for &aring; zoome &middot; eller dra og
-      slepp ein JSON-fil i vinduet.
+      slipp en JSON-fil i vinduet.
     </span>
   </div>
 </div>
@@ -82,8 +82,8 @@
 <div id="oppsummering" class="samandrag"></div>
 
 <div id="melding" class="ramme">
-  <b>Ingen hendelse valt.</b> Vel ei hendelse i nedtrekksmenyen over, sok
-  henne opp, eller dra og slepp ein JSON-fil i vinduet.
+  <b>Ingen hendelse valgt.</b> Velg en hendelse i nedtrekksmenyen over, søk
+  den opp, eller dra og slipp en JSON-fil i vinduet.
 </div>
 
 <div id="indekshint" class="ramme hint" style="display:none"></div>
@@ -94,17 +94,17 @@
 <div id="seksjonstabell" class="tabell"></div>
 
 <div class="botn">
-  Plottet viser r&aring;verdier fra loggen, med pausar og uryddig-faser
-  merkte. Ny hendelse? Legg JSON-fila i <code>data/</code> og oppdater
+  Plottet viser r&aring;verdier fra loggen, med pauser og uryddig-faser
+  merket. Ny hendelse? Legg JSON-fila i <code>data/</code> og oppdater
   <code>data/index.json</code>. Tilgangen styres av Cloudflare Access.
 </div>
 
-<div id="dropsone">Slepp JSON-fila her</div>
+<div id="dropsone">Slipp JSON-fila her</div>
 
 <script src="https://cdn.plot.ly/plotly-3.5.0.min.js" charset="utf-8"></script>
-<!-- data/index.js er JS-tvillinga til data/index.json. Ho er laga av den
-     same generatoren, og trengst berre som reserve nar sida blir opna som
-     lokal fil (file://), der nettlesaren blokkerer fetch. -->
+<!-- data/index.js er JS-tvillingen til data/index.json. Den er laget av den
+     samme generatoren, og trengs bare som reserve når siden blir åpnet som
+     lokal fil (file://), der nettleseren blokkerer fetch. -->
 <script src="data/index.js"></script>
 <script src="js/viser.js"></script>
 </body>

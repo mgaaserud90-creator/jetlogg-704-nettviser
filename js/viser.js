@@ -2,13 +2,13 @@
    viser.js – logikken i hendelsesviseren.
 
    Inndeling:
-     1) smahjelparar (tid, tal, norsk talformat)
-     2) kutt (pausar + uryddig-fasar) og komprimert tidsakse
-     3) tegn() – byggjer plottet for visinga "klippet" eller "fullt"
-     4) fotnotetabellar
-     5) hendelsesliste (data/index.json), sok, filveljar, drag-og-slipp
+     1) småhjelpere (tid, tall, norsk tallformat)
+     2) kutt (pauser + uryddig-faser) og komprimert tidsakse
+     3) tegn() – bygger plottet for visningen "klippet" eller "fullt"
+     4) fotnotetabeller
+     5) hendelsesliste (data/index.json), søk, filvelger, drag-og-slipp
 
-   Plottbiblioteket: plotly.js v3.5.0 fra CDN (pinnet, sjaa viser.html).
+   Plottbiblioteket: plotly.js v3.5.0 fra CDN (pinnet, se viser.html).
    ========================================================================== */
 (function () {
   "use strict";
@@ -20,8 +20,8 @@
     uryddig: "#8c8c8c"
   };
 
-  var modus = "klippet";     /* standard: klippet vising */
-  var gjeldende = null;      /* siste lasta hendelse */
+  var modus = "klippet";     /* standard: klippet visning */
+  var gjeldende = null;      /* siste lastede hendelse */
   var indeks = [];           /* hendelsene fra index.json */
   var valgtFil = "";
 
@@ -42,16 +42,16 @@
     return (v === null || v === undefined || !isFinite(v)) ? "-"
       : Number(v).toFixed(n);
   }
-  /* Norsk talformat: komma som desimalteikn. */
+  /* Norsk tallformat: komma som desimaltegn. */
   function norsk(v, n) {
     var s = tall(v, n);
     return (s === "-") ? s : s.replace(".", ",");
   }
   function forteikn(v) { return (v > 0 ? "+" : (v < 0 ? "\u2212" : "")); }
 
-  /* Escaping for HTML. Merk: vi byggjer ampersand-teiknet fra eit
-     unicode-escape, slik at kjeldefila ikkje sjolv inneheld noko som kan
-     bli tolka som ei HTML-eining. */
+  /* Escaping for HTML. Merk: vi bygger ampersand-tegnet fra et
+     unicode-escape, slik at kildefila ikke selv inneholder noe som kan
+     bli tolket som en HTML-enhet. */
   var AMP = "\u0026";
   function esc(t) {
     return String(t === null || t === undefined ? "" : t)
@@ -81,7 +81,7 @@
     document.getElementById("melding").style.display = "none";
   }
 
-  /* Teller fasen med i lengde og snittfart? Same regel som verktoyet. */
+  /* Teller fasen med i lengde og snittfart? Samme regel som verktøyet. */
   function tellerMed(rad) {
     return (!rad.merknad) && Number(rad.r2) >= 0.90;
   }
@@ -92,7 +92,7 @@
   }
 
   /* ------------------------------------------------------------------ 2) */
-  /* Kutta = pausane (stopp_perioder) + uryddig-fasane (seksjoner).        */
+  /* Kuttene = pausene (stopp_perioder) + uryddig-fasene (seksjoner).      */
 
   function byggKutt(d, base) {
     var kutt = [];
@@ -110,7 +110,7 @@
                   farge: FARGAR.uryddig, type: "uryddig" });
     });
     kutt.sort(function (a, b) { return a.fra - b.fra; });
-    /* sla saman overlappande intervall, slik at fjernetFoer blir rett */
+    /* slå sammen overlappende intervaller, slik at fjernetFoer blir riktig */
     var samla = [];
     kutt.forEach(function (k) {
       var sist = samla[samla.length - 1];
@@ -122,7 +122,7 @@
     return samla;
   }
 
-  /* Kor mange sekund som er kutta bort for tidspunktet t. */
+  /* Hvor mange sekunder som er kuttet bort før tidspunktet t. */
   function fjernetFoer(t, kutt) {
     var sum = 0;
     for (var i = 0; i < kutt.length; i++) {
@@ -142,8 +142,8 @@
 
   function tegn(d, m) {
     if (!d || !d.serie || !d.serie.t_s) {
-      feil("Fila manglar feltet 'serie' – ho er laga av ein eldre eksportor. "
-        + "Koyr eksporter_hendelser.py pa nytt.");
+      feil("Fila mangler feltet 'serie' – den er laget av en eldre eksportør. "
+        + "Kjør eksporter_hendelser.py på nytt.");
       return;
     }
     gjeldende = d;
@@ -159,14 +159,14 @@
 
     var kutt = byggKutt(d, base);
 
-    /* -- kva punkt blir teikna, og kvar pa aksen ---------------------- */
+    /* -- hvilke punkter blir tegnet, og hvor på aksen ---------------- */
     var keep = [];
     for (var i = 0; i < t.length; i++) {
       if (klippet && inneIEitKutt(t[i], kutt)) { continue; }
       keep.push(i);
     }
     if (!keep.length) {
-      feil("Hendinga har ingen punkt att etter klipping.");
+      feil("Hendelsen har ingen punkter igjen etter klipping.");
       return;
     }
     function xav(i) { return klippet ? (t[i] - fjernetFoer(t[i], kutt)) : t[i]; }
@@ -177,7 +177,7 @@
     if (xmax === xmin) { xmax = xmin + 1; }
     var xpad = (xmax - xmin) * 0.008;
 
-    /* -- spora -------------------------------------------------------- */
+    /* -- sporene ------------------------------------------------------ */
     var traces = [];
     traces.push({
       x: xs, y: keep.map(function (i) { return dybde[i]; }),
@@ -197,7 +197,7 @@
       });
     });
 
-    /* -- pausane: markor med heile fotnoten i hover ------------------- */
+    /* -- pausene: markør med hele fotnoten i hover -------------------- */
     stopp.forEach(function (st) {
       var mid = (st.fra_s + st.til_s) / 2;
       var tx = klippet ? (st.fra_s - fjernetFoer(st.fra_s, kutt)) : mid;
@@ -215,11 +215,11 @@
       });
     });
 
-    /* -- skyggelegging og merke --------------------------------------- */
+    /* -- skyggelegging og merker -------------------------------------- */
     var shapes = [], annot = [];
 
     if (klippet) {
-      /* Bruddmerke + farga stopplinje kor ei tid er kutta bort. */
+      /* Bruddmerke + farget stopplinje der en tid er kuttet bort. */
       kutt.forEach(function (k) {
         var xp = k.fra - fjernetFoer(k.fra, kutt);
         shapes.push({
@@ -232,12 +232,12 @@
           font: { size: (k.type === "pause" ? 12 : 14), color: k.farge },
           yanchor: "bottom"
         });
-        /* (Uryddig-brot far berre det grå bruddmerket, ikkje eigen tekst –
-           teksten hamna oppa kurvene og gjorde plottet urolig.) */
+        /* (Uryddig-brudd får bare det grå bruddmerket, ikke egen tekst –
+           teksten havnet oppå kurvene og gjorde plottet urolig.) */
       });
     } else {
-      /* Full vising: kvart kutt blir eit gjennomsiktig band over heile
-         plottet – ein pause = eitt band, i same farge som i fotnoten. */
+      /* Full visning: hvert kutt blir et gjennomsiktig bånd over hele
+         plottet – en pause = ett bånd, i samme farge som i fotnoten. */
       var spennT = Math.max(1, t[t.length - 1] - t[0]);
       kutt.forEach(function (k) {
         var erPause = (k.type === "pause");
@@ -246,8 +246,8 @@
           y0: 0, y1: 1, fillcolor: k.farge,
           opacity: erPause ? 0.22 : 0.13, line: { width: 0 }, layer: "below"
         });
-        /* Merket blir berre sett pa eit band som er breitt nok, elles ville
-           korte band skrive seg oppa kvarandre heilt ved toppen. */
+        /* Merket blir bare satt på et bånd som er bredt nok, ellers ville
+           korte bånd skrevet seg oppå hverandre helt ved toppen. */
         if (erPause || (k.til - k.fra) > 0.04 * spennT) {
           annot.push({
             x: (k.fra + k.til) / 2, y: 1.0, xref: "x", yref: "paper",
@@ -260,7 +260,7 @@
       });
     }
 
-    /* -- fargestripe for fasene nedst --------------------------------- */
+    /* -- fargestripe for fasene nederst ------------------------------- */
     seksjoner.forEach(function (rad) {
       var f = new Date(rad.fra_iso).getTime(), tl = new Date(rad.til_iso).getTime();
       if (!isFinite(f) || !isFinite(tl) || tl <= f) { return; }
@@ -275,7 +275,7 @@
       });
     });
 
-    /* -- fartsmerke over plottet: BARE TAL (cm/min star i fotnoten) --- */
+    /* -- stigningstall over plottet: BARE TALL (cm/min står i fotnoten) */
     var merke = [];
     seksjoner.forEach(function (rad) {
       if (!tellerMed(rad)) { return; }
@@ -312,13 +312,13 @@
       height: 720,
       margin: { l: 64, r: 24, t: 160, b: 56 },
       hovermode: "closest",
-      dragmode: "zoom",                 /* dreg = rektangelzoom */
+      dragmode: "zoom",                 /* dra = rektangelzoom */
       shapes: shapes,
       annotations: annot,
       legend: { orientation: "h", y: 1.22, x: 0, font: { size: 10.5 } },
       xaxis: {
         domain: [0, 1 - BR],
-        title: { text: klippet ? "Tid (pausar og uryddig tekne ut av aksen)"
+        title: { text: klippet ? "Tid (pauser og uryddig tatt ut av aksen)"
                                : "Tid" },
         showgrid: true, gridcolor: "#eef1f5", zeroline: false,
         tickmode: "array", tickvals: tv.vals, ticktext: tv.texts,
@@ -326,7 +326,7 @@
         ticks: "outside", tickcolor: "#b9c4d0"
       },
       yaxis: {
-        title: { text: "Dybde [cm] (0 \u00f8vst)", font: { color: FARGAR.dybde } },
+        title: { text: "Dybde [cm] (0 \u00f8verst)", font: { color: FARGAR.dybde } },
         range: [topp(dybde), bunn(dybde)], tickfont: { color: FARGAR.dybde },
         gridcolor: "#eef1f5", zeroline: false
       }
@@ -365,10 +365,10 @@
     return Math.min(0, b);
   }
 
-  /* Haker pa x-aksen: jamt fordelt over VIST tid (ikkje over talet pa punkt),
-     merkte med klokka til det punktet haket landar pa. Samplinga er tettare i
-     nokre parti enn andre; tel vi berre punkt, hamnar hakene i klynger i dei
-     tette partia. Difor styrer vi etter posisjonen pa aksen. */
+  /* Haker på x-aksen: jevnt fordelt over VIST tid (ikke over tallet på punkt),
+     merket med klokka til det punktet haket lander på. Samplingen er tettere i
+     noen partier enn andre; teller vi bare punkt, havner hakene i klynger i de
+     tette partiene. Derfor styrer vi etter posisjonen på aksen. */
   function tikkar(keep, t, base, klippet, kutt, maks) {
     maks = maks || 10;
     var n = keep.length;
@@ -399,7 +399,7 @@
     b.setAttribute("aria-pressed", klippet ? "false" : "true");
   }
 
-  /* -- samandrag overst --------------------------------------------- */
+  /* -- sammendrag øverst -------------------------------------------- */
   function skrivSamandrag(d, kutt, t, klippet) {
     var stopp = d.stopp_perioder || [];
     var retning = (d.retning === "ned") ? "ned" : "opp";
@@ -412,11 +412,11 @@
       ["Snittfart", norsk(d.snitt_cm_min, 2) + " cm/min"],
       ["Varighet", esc(d.varighet)],
       ["Dybde", norsk(d.dybde_fra_cm, 0) + " \u2192 " + norsk(d.dybde_til_cm, 0) + " cm"],
-      ["Utelatt", norsk(d.utelatt_pst, 1) + " % av tida"],
+      ["Utelatt", norsk(d.utelatt_pst, 1) + " % av tiden"],
       ["Pausar", String(stopp.length)]
     ];
 
-    /* kor mykje av tida aksen faktisk viser */
+    /* hvor mye av tiden aksen faktisk viser */
     if (t.length > 1) {
       var total = t[t.length - 1] - t[0];
       var borte = 0, pause_s = 0, uryddig_s = 0;
@@ -431,11 +431,11 @@
         if (klippet) {
           faktat.push(["Akse", Math.round((total - borte) / 60) + " min aktiv tid av "
             + Math.round(total / 60) + " min (" + Math.round(borte / 60)
-            + " min teke ut: " + Math.round(pause_s / 60) + " min pause, "
+            + " min tatt ut: " + Math.round(pause_s / 60) + " min pause, "
             + Math.round(uryddig_s / 60) + " min uryddig)"]);
         } else {
-          faktat.push(["Akse", "heile forlopet, " + Math.round(total / 60)
-            + " min \u2013 pausane som fargaband"]);
+          faktat.push(["Akse", "hele forløpet, " + Math.round(total / 60)
+            + " min \u2013 pausene som fargebånd"]);
         }
       }
     }
@@ -447,24 +447,24 @@
   }
 
   /* ------------------------------------------------------------------ 4) */
-  /* Fotnotetabellane. Innhaldet er det operatoren bad om tidlegare.       */
+  /* Fotnotetabellene. Innholdet er det operatøren ba om tidligere.        */
 
   function skrivStopptabell(d, base) {
     var stopp = d.stopp_perioder || [];
     var st = document.getElementById("stopptabell");
-    var forklaring = "<p class='forklaring'>Alle fartstal i plottet er i "
-      + "<b>cm/min</b> og er skrivne utan eining (berre tal) for a halde "
-      + "plottet ryddig. I Fullt-visinga ligg kvar pause som eit "
-      + "gjennomsiktig fargaband over plottet \u2013 eitt band per pause, "
-      + "i same farge som raden nedanfor.</p>";
+    var forklaring = "<p class='forklaring'>Alle fartstall i plottet er i "
+      + "<b>cm/min</b> og er skrevet uten enhet (bare tall) for å holde "
+      + "plottet ryddig. I Fullt-visningen ligger hver pause som et "
+      + "gjennomsiktig fargebånd over plottet \u2013 ett bånd per pause, "
+      + "i samme farge som raden nedenfor.</p>";
 
     if (!stopp.length) {
-      st.innerHTML = "<h3>Pausar</h3>" + forklaring
-        + "<p>Ingen pause over grensa i denne hendelsen.</p>";
+      st.innerHTML = "<h3>Pauser</h3>" + forklaring
+        + "<p>Ingen pause over grensen i denne hendelsen.</p>";
       return;
     }
-    st.innerHTML = "<h3>Pausar &ndash; nummererte fra djupast til grunnast "
-      + "(fargen er bandet/streken i plottet; \u0394 dybde: + = gjekk ned "
+    st.innerHTML = "<h3>Pauser &ndash; nummerert fra dypest til grunnest "
+      + "(fargen er båndet/streken i plottet; \u0394 dybde: + = gikk ned "
       + "etter pausen)</h3>" + forklaring
       + "<div class='rull'><table><tr><th>nr</th><th>varighet</th>"
       + "<th>kl. stopp</th><th>dybde stopp</th><th>kl. start</th>"
@@ -489,11 +489,11 @@
     var seksjoner = d.seksjoner || [];
     var se = document.getElementById("seksjonstabell");
     if (!seksjoner.length) { se.innerHTML = ""; return; }
-    se.innerHTML = "<h3>Faser (gr&oslash;n = tel med i lengd og snitt, "
-      + "gr&aring; = halde utanfor)</h3>"
+    se.innerHTML = "<h3>Faser (gr&oslash;nn = teller med i lengde og snitt, "
+      + "gr&aring; = holdt utenfor)</h3>"
       + "<div class='rull'><table><tr><th>#</th><th>fra</th>"
       + "<th>til</th><th>sek</th><th>cm</th><th>cm/min</th><th>R2</th>"
-      + "<th>merknad</th><th>teler</th></tr>"
+      + "<th>merknad</th><th>teller</th></tr>"
       + seksjoner.map(function (rad) {
           var tel = tellerMed(rad);
           return "<tr class='" + (tel ? "" : "merket") + "'>"
@@ -505,20 +505,20 @@
         }).join("") + "</table></div>";
   }
 
-  /* -- skriv ut / lagre biletet som star pa skjermen ----------------- */
+  /* -- skriv ut / lagre bildet som står på skjermen ----------------- */
 
   function biletetekst() {
     return valgtFil ? valgtFil.replace(/\.json$/i, "")
       : (gjeldende && gjeldende.pel ? gjeldende.pel : "hendelse");
   }
 
-  /* Opnar eit nytt vindauge med biletet, samandraget og fotnotane, og
-     ber nettlesaren skrive det ut. Same innhald som tabellane pa sida. */
+  /* Åpner et nytt vindu med bildet, sammendraget og fotnotene, og
+     ber nettleseren skrive det ut. Samme innhold som tabellene på siden. */
   function opneUtskriftsvindauge(dataUrl) {
     var w = window.open("", "_blank");
     if (!w) {
-      feil("Nettlesaren blokkerte utskriftsvindauget. Tillat oppsprett "
-        + "for denne sida og prov att.");
+      feil("Nettleseren blokkerte utskriftsvinduet. Tillat oppsprett "
+        + "for denne siden og prøv igjen.");
       return;
     }
     var sum = document.getElementById("oppsummering").innerHTML;
@@ -573,12 +573,12 @@
     else { skriv(); }
   }
 
-  /* Renderar den AKTIVE figuren – same vising (klippet/fullt) og same
-     levande zoom som star pa skjermen. Plotly.toImage les den gjeldande
-     layouten, sa eventuell rektangel-/rullezoom blir med i biletet. */
+  /* Renderer den AKTIVE figuren – samme visning (klippet/fullt) og samme
+     levende zoom som står på skjermen. Plotly.toImage leser den gjeldende
+     layouten, så eventuell rektangel-/rullezoom blir med i bildet. */
   function eksporterAktiv() {
     if (!gjeldende) {
-      feil("Ingen hendelse er lasta \u2013 vel ei hendelse fyrst.");
+      feil("Ingen hendelse er lastet \u2013 velg en hendelse først.");
       return;
     }
     var gd = document.getElementById("plott");
@@ -588,7 +588,7 @@
     Plotly.toImage(gd, { format: "png", width: breidd, height: hogd, scale: 2 })
       .then(function (dataUrl) { opneUtskriftsvindauge(dataUrl); })
       .catch(function (err) {
-        feil("Klarte ikkje lage biletet: "
+        feil("Klarte ikke lage bildet: "
           + esc(err && err.message ? err.message : err));
       });
   }
@@ -625,11 +625,11 @@
       html = '<option value="">(ingen treff)</option>';
       velg.innerHTML = html;
       treffEl.className = "treff tom";
-      treffEl.textContent = 'Ingen hendelser passar "' + sok + '". '
-        + "Prov t.d. K83, 83, grouting eller 2026-10-01.";
+      treffEl.textContent = 'Ingen hendelser passer "' + sok + '". '
+        + "Prøv f.eks. K83, 83, grouting eller 2026-10-01.";
       return;
     }
-    html = '<option value="">Vel hendelse (' + treff.length + " av "
+    html = '<option value="">Velg hendelse (' + treff.length + " av "
       + alle.length + ") \u2026</option>";
     treff.forEach(function (h) {
       html += '<option value="' + esc(h.fil) + '">' + esc(etikett(h)) + "</option>";
@@ -639,21 +639,21 @@
     treffEl.className = "treff";
     treffEl.textContent = sok
       ? (treff.length + " treff av " + alle.length + " hendelser")
-      : (alle.length + " hendelser i lista");
+      : (alle.length + " hendelser i listen");
 
     if (valgtFil && treff.some(function (h) { return h.fil === valgtFil; })) {
       velg.value = valgtFil;
     } else if (treff.length === 1 && sok) {
-      /* eit eintydig treff – vis det med ein gong */
+      /* et entydig treff – vis det med en gang */
       velg.value = treff[0].fil;
       hentOgVis(treff[0].fil);
     }
   }
 
-  /* JS-tvillingane: data/index.js legg JETLOGG_INDEKS i window, og
-     data/<navn>.js legg kvar hendelse i window.JETLOGG_HENDELSE. Dei kan
-     lastast med ein vanleg <script src>, som OGSAA er lovleg pa file://,
-     der nettlesaren elles blokkerer fetch. */
+  /* JS-tvillingene: data/index.js legger JETLOGG_INDEKS i window, og
+     data/<navn>.js legger hver hendelse i window.JETLOGG_HENDELSE. De kan
+     lastes med en vanlig <script src>, som OGSÅ er lovlig på file://,
+     der nettleseren ellers blokkerer fetch. */
   function hendelseGlobal(navn) {
     return (window.JETLOGG_HENDELSE && window.JETLOGG_HENDELSE[navn]) || null;
   }
@@ -661,16 +661,16 @@
   function visHendelseFraGlobal(navn, vedFeil) {
     var d = hendelseGlobal(navn);
     if (d) { lesTekst(JSON.stringify(d), navn); return; }
-    /* Tvillinga er ikkje lasta enno – hent ho med ein <script src>. */
+    /* Tvillingen er ikke lastet ennå – hent den med en <script src>. */
     var s = document.createElement("script");
     s.src = DATA + navn.replace(/\.json$/i, ".js");
     s.onload = function () {
       var d2 = hendelseGlobal(navn);
       if (d2) { lesTekst(JSON.stringify(d2), navn); }
-      else { vedFeil("fann ikkje \u00ab" + navn + "\u00bb i dei innebygde dataene"); }
+      else { vedFeil("fant ikke \u00ab" + navn + "\u00bb i de innebygde dataene"); }
     };
     s.onerror = function () {
-      vedFeil("fann korkje fila eller JS-tvillinga hennar");
+      vedFeil("fant verken fila eller JS-tvillingen til den");
     };
     document.head.appendChild(s);
   }
@@ -682,9 +682,9 @@
       return r.text();
     }).then(function (txt) { lesTekst(txt, navn); })
       .catch(function (err) {
-        /* fetch kan vere blokkert (typisk file://) – prov JS-tvillinga. */
+        /* fetch kan være blokkert (typisk file://) – prøv JS-tvillingen. */
         visHendelseFraGlobal(navn, function (melding) {
-          feil("Klarte ikkje hente \u00ab" + esc(navn) + "\u00bb ("
+          feil("Klarte ikke hente \u00ab" + esc(navn) + "\u00bb ("
             + esc(melding || err.message) + ").");
         });
       });
@@ -694,12 +694,12 @@
     var d;
     try { d = JSON.parse(tekst); }
     catch (e) {
-      feil("Klarte ikkje lese \u00ab" + esc(navn) + "\u00bb som JSON: " + esc(e.message));
+      feil("Klarte ikke lese \u00ab" + esc(navn) + "\u00bb som JSON: " + esc(e.message));
       return;
     }
     if (d.hendelser && d.hendelser.length) {
       feil("Dette er den kombinerte fila med " + d.hendelser.length
-        + " hendelser. Vel ei einskild hendelse i nedtrekksmenyen "
+        + " hendelser. Velg en enkelt hendelse i nedtrekksmenyen "
         + "(" + AMP + "lt;dato" + AMP + "gt;_" + AMP + "lt;pel" + AMP
         + "gt;_" + AMP + "lt;metode" + AMP + "gt;.json).");
       return;
@@ -711,7 +711,7 @@
     if (!fil) { return; }
     var leser = new FileReader();
     leser.onload = function () { lesTekst(String(leser.result), fil.name); };
-    leser.onerror = function () { feil("Klarte ikkje lese fila " + esc(fil.name)); };
+    leser.onerror = function () { feil("Klarte ikke lese fila " + esc(fil.name)); };
     leser.readAsText(fil, "utf-8");
   }
 
@@ -731,7 +731,7 @@
       hentOgVis(valgtFil);
       return;
     }
-    /* Vis forste hendelse med ein gong, sa ein ser noko med det same. */
+    /* Vis første hendelse med en gang, så man ser noe med det samme. */
     var forste = indeks.filter(function (h) { return !h.kombinert; })[0];
     if (forste) {
       document.getElementById("velg").value = forste.fil;
@@ -745,28 +745,28 @@
       return r.json();
     }).then(function (data) { taImotIndeks(data); })
       .catch(function (err) {
-        /* fetch er blokkert pa file://. data/index.js er lasta med ein
-           vanleg <script src> og ligg i window.JETLOGG_INDEKS. Da verkar
-           nedtrekket og den fyrste hendelsen utan nokon tenar. */
+        /* fetch er blokkert på file://. data/index.js er lastet med en
+           vanlig <script src> og ligger i window.JETLOGG_INDEKS. Da virker
+           nedtrekket og den første hendelsen uten noen server. */
         if (window.JETLOGG_INDEKS) {
           taImotIndeks(window.JETLOGG_INDEKS);
-          visIndekshint("Nedtrekkslista er lesen fra den innebygde "
-            + "<code>data/index.js</code> (sida er opna som lokal fil, der "
-            + "nettlesaren ikkje l\u00e5t oss hente <code>data/index.json</code> "
-            + "direkte). Alt verkar som normalt.");
+          visIndekshint("Nedtrekkslisten er lest fra den innebygde "
+            + "<code>data/index.js</code> (siden er åpnet som lokal fil, der "
+            + "nettleseren ikke l\u00e5r oss hente <code>data/index.json</code> "
+            + "direkte). Alt virker som normalt.");
           return;
         }
         document.getElementById("velg").innerHTML =
-          '<option value="">(hendelseslista er ikkje tilgjengeleg)</option>';
-        visIndekshint("<b>Hendelseslista kunne ikkje lastast.</b> Ho krev at "
-          + "sida blir koyrd fra ein liten lokal server eller fra "
-          + "Cloudflare \u2013 eller at <code>data/index.js</code> ligg ved "
-          + "sida. Du kan framleis dra og sleppe ei JSON-fil hit eller bruke "
-          + "\u00abOpne JSON-fil\u00bb. (" + esc(err.message) + ")");
+          '<option value="">(hendelseslisten er ikke tilgjengelig)</option>';
+        visIndekshint("<b>Hendelseslisten kunne ikke lastes.</b> Den krever at "
+          + "siden blir kjørt fra en liten lokal server eller fra "
+          + "Cloudflare \u2013 eller at <code>data/index.js</code> ligger ved "
+          + "siden. Du kan fortsatt dra og slippe en JSON-fil hit eller bruke "
+          + "\u00abÅpne JSON-fil\u00bb. (" + esc(err.message) + ")");
       });
   }
 
-  /* -- kopling av hendingar ----------------------------------------- */
+  /* -- kobling av hendelser ----------------------------------------- */
   document.getElementById("velg").addEventListener("change", function (e) {
     if (e.target.value) { hentOgVis(e.target.value); }
   });
@@ -807,13 +807,13 @@
     }
   });
 
-  /* Djuplenke: ...viser.html?vis=fullt (eller ?vis=klippet) vel kva vising
-     sida startar i. Standard er klippet. */
+  /* Djuplenke: ...viser.html?vis=fullt (eller ?vis=klippet) velger hvilken
+     visning siden starter i. Standard er klippet. */
   var vm = /[?&]vis=(klippet|fullt)/i.exec(window.location.search);
   if (vm) { modus = vm[1].toLowerCase(); }
   merkBolk(modus === "klippet");
 
-  window.visData = tegn;            /* for proving og andre sider */
+  window.visData = tegn;            /* for prøving og andre sider */
   window.jetloggModus = function () { return modus; };
   lastIndeks();
 })();

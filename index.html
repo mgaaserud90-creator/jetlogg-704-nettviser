@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <!--
-  index.html – framside for JETLOGG 704-nettvisaren.
+  index.html – forside for JETLOGG 704-nettviseren.
 
-  OM PASSORDSFELTET PÅ DENNE SIDA – LES DETTE:
+  OM PASSORDFELTET PÅ DENNE SIDEN – LES DETTE:
   ---------------------------------------------------------------------------
-  Den ekte lasen er Cloudflare Access. Den kjorer HELT YTST, i Cloudflare sitt
-  nett, for sida i det heile tatt blir sendt til nettlesaren. Er du ikkje
-  logga inn der, far du ikkje ein gong HTML-en.
+  Den ekte låsen er Cloudflare Access. Den kjører HELT YTTERST, i Cloudflares
+  nett, før siden i det hele tatt blir sendt til nettleseren. Er du ikke
+  logget inn der, får du ikke en gang HTML-en.
 
-  Feltet nedanfor er berre ein ekstra sperre i grensesnittet. Det er IKKJE
-  sikkerheit: sida er statisk, sa passordet og datafila ligg i nettlesaren
-  uansett. Den som kjenner URL-en til ei JSON-fil kan hente ho direkte om
-  Access-policyen ikkje stenger han ute. Difor star det same i klartekst til
-  operatoren i README.md.
+  Feltet nedenfor er bare en ekstra sperre i grensesnittet. Det er IKKE
+  sikkerhet: siden er statisk, så passordet og datafila ligger i nettleseren
+  uansett. Den som kjenner URL-en til en JSON-fil kan hente den direkte hvis
+  Access-policyen ikke stenger den ute. Derfor står det samme i klartekst til
+  operatøren i README.md.
   ---------------------------------------------------------------------------
 -->
 <html lang="nb">
@@ -32,9 +32,9 @@
 
     <h1>JETLOGG 704 &ndash; peledata</h1>
     <p class="ingress">
-      Privat viser for jetlogg-filene fra riggen. Her finn du kurvene for
-      hver enkelt hendelse &ndash; klipte og fulle tidsforlop, pauser,
-      faser og stigningstal.
+      Privat viser for jetlogg-filene fra riggen. Her finner du kurvene for
+      hver enkelt hendelse &ndash; klippede og fulle tidsforløp, pauser,
+      faser og stigningstall.
     </p>
 
     <form id="form" autocomplete="off">
@@ -43,21 +43,21 @@
         <input type="password" id="passord" name="passord"
                autocomplete="current-password" aria-describedby="sperre-notis">
       </div>
-      <button type="submit" class="knapp-sjef">Opne viseren</button>
+      <button type="submit" class="knapp-sjef">Åpne viseren</button>
       <p id="feil" class="feilmelding" role="alert">
-        Feil passord. Prov igjen.
+        Feil passord. Prøv igjen.
       </p>
     </form>
 
     <p id="sperre-notis" class="notis sperre">
       <b>Merk:</b> Tilgangen styres av Cloudflare Access &ndash; dette feltet
-      er kun ein ekstra sperre i grensesnittet. Det som faktisk verner dataa
-      er innlogginga Cloudflare spor om (engangskode pa e-post), og ho skjer
-      i Cloudflare sitt nett <i>for</i> sida blir lasta ned.
+      er kun en ekstra sperre i grensesnittet. Det som faktisk verner dataene
+      er innloggingen Cloudflare spør om (engangskode på e-post), og den skjer
+      i Cloudflares nett <i>før</i> siden blir lastet ned.
     </p>
 
     <p class="bunnlinje">
-      Har du kome hit utan a bli bedt om a logge inn? Da manglar
+      Har du kommet hit uten å bli bedt om å logge inn? Da mangler
       Access-policyen &ndash; se nettsted/README.md.
     </p>
   </div>
@@ -68,11 +68,12 @@
   "use strict";
 
   /* ---------------------------------------------------------------------
-     Passordet blir IKKJE samanlikna som klartekst her. Vi lagrar berre
-     SHA-256-summen av det operator-setje passordet og samanliknar summar.
-     Det gjer at passordet ikkje star i fila – men det er framleis berre eit
-     grensesnitt-felt pa ei statisk side, ikkje eit vern. Sjolv med summen
-     kan kven som helst hente JSON-filene direkte om Access ikkje stenger.
+     Passordet blir IKKE sammenlignet som klartekst her. Vi lagrer bare
+     SHA-256-summen av det operatør-satte passordet og sammenligner summer.
+     Det gjør at passordet ikke står i fila – men det er fortsatt bare et
+     grensesnitt-felt på en statisk side, ikke en beskyttelse. Selv med
+     summen kan hvem som helst hente JSON-filene direkte hvis Access ikke
+     stenger.
      --------------------------------------------------------------------- */
   var PASSORD_SHA256 = "678d3e6eb832dc24a1cd5c5e7298c8c0c4e74f15e7fcdfac7cf6bdc32c45ac80";
 
@@ -97,10 +98,10 @@
     e.preventDefault();
     feil.classList.remove("vis");
     if (!window.crypto || !window.crypto.subtle) {
-      /* http:// pa ein annan maskin enn localhost er ikkje "secure context".
-         Pa Cloudflare Pages (https) og pa localhost virkar dette. */
-      feil.textContent = "Nettlesaren nektar a rekne sjekksum her "
-        + "(sida ma koyrast over https eller localhost).";
+      /* http:// på en annen maskin enn localhost er ikke «secure context».
+         På Cloudflare Pages (https) og på localhost virker dette. */
+      feil.textContent = "Nettleseren nekter å regne sjekksum her "
+        + "(siden må kjøres over https eller localhost).";
       feil.classList.add("vis");
       return;
     }
@@ -109,13 +110,13 @@
         try { sessionStorage.setItem("jetlogg.innlogga", "1"); } catch (e2) {}
         window.location.href = "viser.html";
       } else {
-        feil.textContent = "Feil passord. Prov igjen.";
+        feil.textContent = "Feil passord. Prøv igjen.";
         feil.classList.add("vis");
         felt.value = "";
         felt.focus();
       }
     }).catch(function () {
-      feil.textContent = "Klarte ikkje a sjekke passordet i denne nettlesaren.";
+      feil.textContent = "Klarte ikke å sjekke passordet i denne nettleseren.";
       feil.classList.add("vis");
     });
   });
