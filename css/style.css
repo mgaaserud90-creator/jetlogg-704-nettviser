@@ -240,10 +240,14 @@ button, .knapp {
 }
 
 /* ---------- utskrift av selve siden ----------
-   Skjuler kontrollpanelet og det som bare hører skjermen til, slik at
-   plott, sammendrag og tabeller kommer ryddig ut på papir. Knappen «Skriv ut /
+   Liggende A4, med grafen først og tabellene på neste ark. Knappen «Skriv ut /
    lagre bilde» åpner i tillegg et eget vindu med bildet i den visningen og
    den zoomingen som står på skjermen. */
+@page {
+  size: A4 landscape;
+  margin: 8mm;
+}
+
 @media print {
   .kontroller,
   #dropsone,
@@ -251,6 +255,7 @@ button, .knapp {
   .topp { background: #fff; color: #1d2430; }
   .topp .merke { border: 1px solid var(--kant); }
   .plottramme { padding: 0; }
+  .samandrag { font-size: 9px; padding: 4px 0; }
   .tabell th { position: static; }
-  .tabell { page-break-inside: avoid; }
+  .tabell { page-break-inside: avoid; break-before: page; }
 }

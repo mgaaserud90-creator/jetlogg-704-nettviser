@@ -268,10 +268,13 @@ feltet virker der óg.
   Rulling zoomer.
 - **Skriv ut / lagre bilde:** knappen under «Annet» renderer den figuren som
   står på skjermen – samme visning (Klippet/Fullt) og samme levende zoom – til
-  et PNG, og åpner et nytt vindu med bildet, sammendraget og fotnotene klare
-  for utskrift. Der ligger også en **Last ned PNG**-knapp for rein
-  bildeutskrift. Modebar-kameraet i plottet lager bildet direkte, med filnavnet
-  til hendelsen.
+  et PNG, og åpner et nytt vindu lagt opp for **liggende A4**. Der er grafen
+  hovedsaken: bildet lages i 3840 × 2400 px (ca. 350 dpi på papir) og fyller
+  nesten hele arket, med tittel og sammendrag som ei tynn stripe overst.
+  Pausetabellene kommer på neste ark. Der ligger også en **Last ned PNG**-knapp
+  for rein bildeutskrift. Modebar-kameraet i plottet lager bildet direkte, med
+  filnavnet til hendelsen. Skriver du ut selve sida med Ctrl+P, blir den også
+  liggende.
 - **Fartstall:** fart-kurven er tatt bort. Igjen står **stigningstallene** som
   **bare tall** (`7,8`, ikke `7,8 cm/min`) øverst i plottet – ett tall per
   seksjon som teller med, fordelt langs x-aksen. Enheten er forklart i fotnoten.

@@ -526,33 +526,44 @@
     var faser = document.getElementById("seksjonstabell").innerHTML;
     var vising = (modus === "klippet") ? "Klippet" : "Fullt";
     var namn = biletetekst();
+    var tabellar = stopp + faser;
+    /* Bare ta med tabellene om det faktisk finnes noe i dem – ellers ville et
+       tomt ark nummer to bli skrevet ut. */
+    var harTabell = tabellar.indexOf("<table") !== -1;
+
     var html =
       '<!DOCTYPE html><html lang="nb"><head><meta charset="utf-8">'
       + '<title>JETLOGG 704 \u2013 ' + esc(namn) + '</title><style>'
-      + 'body{font-family:"Segoe UI",Arial,sans-serif;margin:14px;color:#1d2430;}'
-      + 'h1{font-size:16px;margin:0 0 6px;color:#00325f;}'
-      + '.samandrag{font-size:12.5px;margin:0 0 10px;}'
-      + '.samandrag .fakta{display:inline-block;margin-right:14px;margin-bottom:2px;}'
-      + 'img{max-width:100%;border:1px solid #d7dee7;}'
-      + '.tabell{font-size:11.5px;}'
-      + '.tabell h3{font-size:13px;margin:12px 0 5px;}'
+      /* Liggende A4, og grafen skal fylle arket. Tittel og sammendrag er
+         derfor krympet til en tynn stripe overst, og tabellene flyttet til
+         neste side. */
+      + '@page{size:A4 landscape;margin:8mm;}'
+      + 'body{font-family:"Segoe UI",Arial,sans-serif;margin:0;color:#1d2430;}'
+      + 'h1{font-size:12px;margin:0 0 3px;color:#00325f;}'
+      + '.samandrag{font-size:8.5px;line-height:1.3;margin:0 0 4px;}'
+      + '.samandrag .fakta{display:inline-block;margin-right:9px;white-space:nowrap;}'
+      + 'img{display:block;width:100%;height:auto;border:1px solid #d7dee7;}'
+      + '.tabell{font-size:8.5px;break-before:page;page-break-before:always;}'
+      + '.tabell h3{font-size:10px;margin:8px 0 4px;}'
       + '.tabell table{border-collapse:collapse;width:100%;}'
-      + '.tabell th,.tabell td{border:1px solid #d7dee7;padding:3px 6px;text-align:left;}'
+      + '.tabell th,.tabell td{border:1px solid #d7dee7;padding:2px 5px;text-align:left;}'
       + '.tabell th{background:#f3f6fa;}'
-      + '.fargeprikk{display:inline-block;width:9px;height:9px;margin-right:5px;border-radius:2px;}'
-      + '.verktoystolpe{margin:0 0 10px;}'
-      + '.verktoystolpe button{font:inherit;padding:7px 12px;border:1px solid #004996;background:#fff;color:#004996;border-radius:6px;font-weight:600;cursor:pointer;}'
-      + '.forklaring{color:#5b6877;font-size:12px;}'
-      + '@media print{.verktoystolpe{display:none;} body{margin:0;}}'
+      + '.fargeprikk{display:inline-block;width:8px;height:8px;margin-right:4px;border-radius:2px;}'
+      + '.verktoystolpe{margin:0 0 6px;}'
+      + '.verktoystolpe button{font:inherit;padding:6px 11px;border:1px solid #004996;background:#fff;color:#004996;border-radius:6px;font-weight:600;cursor:pointer;}'
+      + '.forklaring{color:#5b6877;font-size:11px;}'
+      + '@media print{.verktoystolpe{display:none !important;}}'
       + '</style></head><body>'
       + '<h1>JETLOGG 704 \u2013 ' + esc(namn) + ' (' + esc(vising) + ')</h1>'
       + '<div class="verktoystolpe">'
       + '<button type="button" id="lagre-png">Last ned PNG</button> '
-      + '<span class="forklaring">eller bruk Ctrl+P / Cmd+P for \u00e5 skrive ut.</span>'
+      + '<span class="forklaring">Skrives ut som liggende A4. Grafen dekker '
+      + 'arket, og pausetabellene kommer p\u00e5 neste side. Ctrl+P / Cmd+P '
+      + 'skriver ut.</span>'
       + '</div>'
       + '<div class="samandrag">' + sum + '</div>'
       + '<img id="bilete" alt="Plott: ' + esc(namn) + '" src="' + dataUrl + '">'
-      + '<div class="tabell">' + stopp + faser + '</div>'
+      + (harTabell ? '<div class="tabell">' + tabellar + '</div>' : '')
       + '</body></html>';
     w.document.open();
     w.document.write(html);
@@ -583,8 +594,11 @@
     }
     var gd = document.getElementById("plott");
     var namn = biletetekst();
-    var breidd = gd.clientWidth || 1000;
-    var hogd = gd.clientHeight || 640;
+    /* Bildet lages i et fast liggende format (1,6:1), ikke etter størrelsen
+       på skjermen. Da fyller grafen nesten hele det liggende A4-arket når det
+       skrives ut, uansett hvordan vinduet står. */
+    var breidd = 1920;
+    var hogd = 1200;
     Plotly.toImage(gd, { format: "png", width: breidd, height: hogd, scale: 2 })
       .then(function (dataUrl) { opneUtskriftsvindauge(dataUrl); })
       .catch(function (err) {
