@@ -1,26 +1,33 @@
 # JETLOGG 704 – nettviser
 
-Privat nettviser for peledataene fra riggen. Siden er et reint statisk nettsted
-(HTML/CSS/JS) som blir publisert på **Cloudflare Pages** og låst bak
-**Cloudflare Access**.
+Nettviser for peledataene fra riggen. Siden er et reint statisk nettsted
+(HTML/CSS/JS) som blir publisert **helt åpent** – alle som kjenner adressen
+kommer inn på forsiden, og passordfeltet der slipper dem videre til viseren.
 
 ---
 
-## 0. Kort om hva som verner hva
+## 0. Tilgang – slik er det bestemt
 
-| Lag | Hva det er | Verner det dataene? |
-|---|---|---|
-| **Cloudflare Access** | Innlogging med engangskode på e-post, i Cloudflares nett | **Ja. Dette er låsen.** |
-| Passordfeltet på `index.html` | En sperre i grensesnittet | **Nei.** Siden er statisk – HTML, JS og JSON-filer blir sendt til nettleseren. Passordet kan ikke skjules. |
+Siden er **åpen**. Alle som kjenner adressen ser forsiden, og den som skriver
+riktig passord kommer videre til viseren. Det er et bevisst valg fra
+operatøren: det skal være enkelt å slippe folk inn, uten e-postlister eller
+innloggingsporter.
 
-> **VIKTIG — LES DETTE FØRST:**
-> Så lenge **Cloudflare Access-policyen ikke er satt opp**, er siden helt åpen.
-> Den som kjenner adressen kan hente `data/index.json` og alle JSON-filene
-> direkte i nettleseren, helt utenom passordfeltet.
-> **Rekkefølgen er derfor: sett opp Access-policyen FØRST, og pek ikke noen
-> mot adressen før policyen er på plass.**
-> Passordfeltet på forsiden er bare en ekstra sperre i grensesnittet, som
-> operatøren ba om.
+Det du bør vite om hva passordfeltet faktisk gjør:
+
+| | |
+|---|---|
+| Stopper den som bare bruker siden | **Ja.** Uten passordet kommer du ikke videre til `viser.html`. |
+| Stopper den som kjenner filnavnet til en datafil | **Nei.** `data/index.json` og hver hendelses-JSON er vanlige statiske filer. Skriver du `.../data/2026-10-01_K83_grouting.json` i nettleseren, får du hele fila – uten passord. |
+
+Passordet ligger ikke i klartekst: feltet regner ut **SHA-256-summen** av det
+du skriver og sammenligner med summen i `index.html` (`PASSORD_SHA256`). Det
+hindrer at passordet står synlig i kildekoden, men det er ikke kryptering –
+sjekksummen er offentlig, og datafilene er det også.
+
+> **Vil du låse dataene på ekte?** Da må filene serveres av noe som sjekker
+> passordet *før* fila blir sendt. Steg 6 viser de to måtene. Operatøren har
+> vurdert dette og valgt den åpne varianten.
 
 ---
 
@@ -51,7 +58,7 @@ Nettstedet er **repo-rota**. Det vil si at innholdet i denne mappa
 
 Plottbiblioteket blir hentet fra CDN, **versjon pinnet til `plotly.js v3.5.0`**
 (`https://cdn.plot.ly/plotly-3.5.0.min.js` i `viser.html`). Ingenting blir
-bygd; Cloudflare serverer filene som de er.
+bygd; serveren leverer filene som de er.
 
 Hver JSON-fil har en liten **JS-tvilling** ved siden av seg (`index.js`,
 `<navn>.js`). Tvillingene inneholder nøyaktig den samme JSON-en, bare pakket inn
@@ -64,7 +71,7 @@ tvillingene blir ikke brukt.
 
 ---
 
-## 2. Legg prosjektet i et privat GitHub-repo
+## 2. Legg prosjektet i et GitHub-repo
 
 ```bash
 cd nettsted
@@ -73,7 +80,7 @@ git add .
 git commit -m "JETLOGG 704 - nettviser"
 ```
 
-Lag et **privat** repo og push (bytt ut `<brukar>` og `<repo>`):
+Lag repoet og push (bytt ut `<repo>`):
 
 ```bash
 gh repo create <repo> --private --source=. --push
@@ -82,23 +89,24 @@ gh repo create <repo> --private --source=. --push
 eller uten GitHub CLI:
 
 ```bash
-git remote add origin https://github.com/<brukar>/<repo>.git
+git remote add origin https://github.com/<bruker>/<repo>.git
 git branch -M main
 git push -u origin main
 ```
 
-**Velg «private».** Men merk: et privat repo er ikke det som verner
-*publikasjonen* – det er Access-policyen i steg 4.
+Repoet kan være **privat**. Det skjuler kildekoden, men **ikke**
+publikasjonen: er siden først publisert, er den åpen for alle som har
+adressen, uansett hvem som har tilgang til repoet.
 
 ---
 
-## 3. Opprett Pages-prosjektet i Cloudflare
+## 3. Publiser på Cloudflare Pages
 
 Logg inn på <https://dash.cloudflare.com> → **Workers & Pages** →
 **Create** → **Pages**.
 
-Navnet på prosjektet avgjør adressen: `<prosjektnamn>.pages.dev`.
-Dømet i dette repoet bruker `jetlogg-704` (samme navn som i
+Navnet på prosjektet avgjør adressen: `<prosjektnavn>.pages.dev`.
+Eksempelet i dette repoet bruker `jetlogg-704` (samme navn som i
 `.github/workflows/deploy.yml`). Velg et navn og bruk det samme overalt.
 
 **Bygg-oppsett** (samme hvilken metode du velger i steg 4):
@@ -130,9 +138,9 @@ Workflow-fila ligger i `.github/workflows/deploy.yml` og bruker
 > <https://developers.cloudflare.com/pages/how-to/use-direct-upload-with-continuous-integration/>.
 >
 > **Fremtidsvarsel:** Cloudflare har sagt at *Pages* blir avløst av
-> *Workers* for nye prosjekter. Pages virker fortsatt, og Access fungerer likt
-> på begge, men hvis du setter opp noe helt nytt senere kan det være
-> enklere å legge den statiske siden på Workers i stedet.
+> *Workers* for nye prosjekter. Pages virker fortsatt, men hvis du setter opp
+> noe helt nytt senere kan det være enklere å legge den statiske siden på
+> Workers i stedet.
 
 > **Om tokenet og `workflow`-scope:** GitHub nekter å ta imot ei fil under
 > `.github/workflows/` fra et token som ikke har `workflow`-scopet. Feilen
@@ -165,40 +173,46 @@ Legg disse to inn under repoet → **Settings** → **Secrets and variables** �
 
 ---
 
-## 6. Sett opp Cloudflare Access (DETTE ER LÅSEN)
+## 6. Vil du låse dataene likevel? (valgfritt, ikke gjort)
+
+Den åpne varianten i steg 0 er valgt med åpne øyne. Skulle du ombestemme deg,
+finnes det to måter å få passordet til å gjelde også for filene. Ingen av dem
+er satt opp i dette repoet.
+
+**A. Cloudflare Access – e-post og engangskode før siden i det hele tatt vises.**
 
 1. Cloudflare-dashbordet → **Zero Trust** → **Access** → **Applications**
    → **Add an application** → **Self-hosted**.
 2. **Application domain:** legg inn Pages-domenet, f.eks.
    `jetlogg-704.pages.dev`, og (hvis du har) et eget domene i tillegg.
-   Legg gjerne inn begge som to «public hostnames» i samme app.
-3. **Policy:** lag en policy av typen **Allow** med **Include → Emails**,
-   og list opp **bare** de e-postadressene som skal ha tilgang.
-   (Ikke bruk «Everyone», og ikke bruk et domene som slipper inn flere enn
-   du mener.)
-4. Sett **session duration** til det du vil (f.eks. 24 timer).
-5. Lagre.
+3. **Policy:** **Allow** med **Include → Emails**, og list opp **bare** de
+   e-postadressene som skal slippe inn. (Ikke bruk «Everyone».)
+4. Sett **session duration** (f.eks. 24 timer) og lagre.
 
-Hvordan det oppleves for operatøren: første gang noen åpner adressen, blir
-de stoppet av Cloudflare og bedt om e-postadressen sin. De får en
-**engangskode på e-post**, skriver den inn, og kommer først *da* videre til
-siden. Alt dette skjer **i Cloudflares nett, før siden i det hele tatt blir
-sendt til nettleseren** – og før passordfeltet på forsiden blir vist.
+Da møter den som kjenner lenka en Cloudflare-side som ber om e-post, og får en
+**engangskode**. Alt skjer i Cloudflares nett *før* siden blir sendt til
+nettleseren. Test i et inkognito-vindu: du skal bli bedt om e-post, ikke få
+forsiden.
 
-**Test med en gang:** åpne adressen i et privat/inkognito-vindu. Du skal
-da bli bedt om e-post og kode – ikke få forsiden.
+**B. Én delt kode, sjekket på serversiden – Cloudflare Pages Function.**
+
+Legg en funksjon i `functions/data/[[sti]].js` som leser forespørselen, krever
+en cookie eller en header med den delte koden, og først da henter fila fra
+`data/`. Da ligger ikke JSON-filene som fritt tilgjengelige statiske filer
+lenger, og `fetch` i viseren må sende koden med. Dette krever litt arbeid i
+`js/viser.js` også, siden den i dag henter `data/index.json` rett fra stien.
+Si fra om du vil ha det bygget.
 
 ---
 
-## 7. Passordfeltet på forsiden (bare grensesnitt)
+## 7. Passordet på forsiden – dette er sperren
 
-Forsiden (`index.html`) har et passordfelt. Det er en ekstra sperre
-operatøren ba om, og det er **ikke** et vern: alt innholdet er statiske
-filer, så både siden og dataene blir sendt til nettleseren, og passordet kan
-ikke skjules.
+Forsiden (`index.html`) har et passordfelt. Det er med vilje den eneste
+sperren på siden, og den fungerer slik operatøren vil: alle ser forsiden, den
+som kan passordet kommer videre. Se steg 0 for hva den gjør og ikke gjør.
 
-Koden lagrer derfor ikke passordet i klartekst, men **SHA-256-summen** av det
-(i `index.html`, variabelen `PASSORD_SHA256`). Feltet sammenligner summer.
+Koden lagrer ikke passordet i klartekst, men **SHA-256-summen** av det
+(`index.html`, variabelen `PASSORD_SHA256`). Feltet sammenligner summer.
 
 **Bytt passord:** regn ut summen av det nye passordet og bytt ut verdien:
 
@@ -208,8 +222,8 @@ python -c "import hashlib;print(hashlib.sha256('NYTT_PASSORD'.encode('utf-8')).h
 
 Summen virker bare over `https://` eller på `localhost` (nettleseren krever
 en «secure context» for å regne SHA-256 i det hele tatt). Cloudflare Pages
-kjører på https, så det er greit; åpner du `index.html` som lokal fil
-(`file://`), vil feltet si fra om at det ikke får regne summen.
+kjører på https, så det er greit. Også `file://` regnes som secure context i
+Chrome, så feltet virker der óg.
 
 ---
 
@@ -311,13 +325,15 @@ Cloudflare, der JSON-filene blir lest direkte.
 
 ---
 
-## 11. Sjekkliste før du slipper noen inn
+## 11. Sjekkliste før du deler lenka
 
-- [ ] Repoet er **privat**.
-- [ ] Cloudflare Access-appen dekker domenet (`*.pages.dev`, og eget
-      domene om du har).
-- [ ] Policyen sier **Allow** og lister **bare** de rette e-postene.
-- [ ] Testet i inkognito-vindu: e-post + engangskode kommer **før** siden.
-- [ ] Eventuelt: bytt passordet på forsiden (steg 7).
+- [ ] Pages-prosjektet er opprettet og publiserer fra `main`.
+- [ ] Du har åpnet adressa selv og sett at forsiden kommer opp.
+- [ ] Passordet på forsiden virker (og er byttet om du vil ha et annet enn
+      det som står i `PASSORD_SHA256` nå).
+- [ ] Du er klar over at datafilene under `data/` er lesbare for den som
+      kjenner filnavnet, uten passord. Dette er valgt med vilje – se steg 0.
+- [ ] Vil du ikke det likevel: steg 6.
 
-Uten de tre første punktene er siden helt åpen for hvem som helst med lenka.
+Er du i tvil om du bør dele lenka bredt: alt som ligger under `data/` blir
+tilgjengelig for den som får tak i et filnavn.

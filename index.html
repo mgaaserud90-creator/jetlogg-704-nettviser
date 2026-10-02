@@ -4,15 +4,17 @@
 
   OM PASSORDFELTET PÅ DENNE SIDEN – LES DETTE:
   ---------------------------------------------------------------------------
-  Den ekte låsen er Cloudflare Access. Den kjører HELT YTTERST, i Cloudflares
-  nett, før siden i det hele tatt blir sendt til nettleseren. Er du ikke
-  logget inn der, får du ikke en gang HTML-en.
+  Dette er den eneste sperren på siden, og den er med vilje enkel: alle som
+  kjenner adressen ser denne forsiden, og den som skriver riktig passord
+  kommer videre til viseren. Slik vil operatøren ha det.
 
-  Feltet nedenfor er bare en ekstra sperre i grensesnittet. Det er IKKE
-  sikkerhet: siden er statisk, så passordet og datafila ligger i nettleseren
-  uansett. Den som kjenner URL-en til en JSON-fil kan hente den direkte hvis
-  Access-policyen ikke stenger den ute. Derfor står det samme i klartekst til
-  operatøren i README.md.
+  Vær klar over hva feltet gjør og ikke gjør. Siden er statisk, så HTML, JS og
+  JSON-filene blir sendt til nettleseren som vanlige filer. Passordet stopper
+  altså den som bruker SIDEN, men ikke den som kjenner eller gjetter navnet på
+  en datafil – for eksempel data/2026-10-01_K83_grouting.json kan hentes rett
+  i nettleseren, utenom feltet. Operatøren har vurdert dette og godtatt det.
+  Vil du ha dataene faktisk låst, må filene serveres av noe som sjekker
+  passordet på serversiden; README.md, steg 6, viser de to måtene.
   ---------------------------------------------------------------------------
 -->
 <html lang="nb">
@@ -32,9 +34,9 @@
 
     <h1>JETLOGG 704 &ndash; peledata</h1>
     <p class="ingress">
-      Privat viser for jetlogg-filene fra riggen. Her finner du kurvene for
-      hver enkelt hendelse &ndash; klippede og fulle tidsforløp, pauser,
-      faser og stigningstall.
+      Viser for jetlogg-filene fra riggen. Her finner du kurvene for hver
+      enkelt hendelse &ndash; klippede og fulle tidsforløp, pauser, faser og
+      stigningstall.
     </p>
 
     <form id="form" autocomplete="off">
@@ -50,15 +52,15 @@
     </form>
 
     <p id="sperre-notis" class="notis sperre">
-      <b>Merk:</b> Tilgangen styres av Cloudflare Access &ndash; dette feltet
-      er kun en ekstra sperre i grensesnittet. Det som faktisk verner dataene
-      er innloggingen Cloudflare spør om (engangskode på e-post), og den skjer
-      i Cloudflares nett <i>før</i> siden blir lastet ned.
+      <b>Merk:</b> Feltet sperrer bruken av siden, ikke filene. Den som
+      kjenner navnet på en datafil kan hente den direkte fra
+      <code>data/</code> uten passord. Det er et valgt kompromiss &ndash;
+      se README.md, steg 0.
     </p>
 
     <p class="bunnlinje">
-      Har du kommet hit uten å bli bedt om å logge inn? Da mangler
-      Access-policyen &ndash; se nettsted/README.md.
+      Glemt passordet? README.md viser hvordan det byttes &ndash; det ligger
+      lagret som en sjekksum, ikke i klartekst.
     </p>
   </div>
 </main>
@@ -69,11 +71,10 @@
 
   /* ---------------------------------------------------------------------
      Passordet blir IKKE sammenlignet som klartekst her. Vi lagrer bare
-     SHA-256-summen av det operatør-satte passordet og sammenligner summer.
-     Det gjør at passordet ikke står i fila – men det er fortsatt bare et
-     grensesnitt-felt på en statisk side, ikke en beskyttelse. Selv med
-     summen kan hvem som helst hente JSON-filene direkte hvis Access ikke
-     stenger.
+     SHA-256-summen av det operatør-satte passordet og sammenligner summer,
+     så passordet ikke står i fila. Sjekksummen er likevel ikke et vern:
+     JSON-filene er vanlige statiske filer og kan hentes direkte av den som
+     kjenner filnavnet. Se README.md, steg 6, om du vil låse dem på ekte.
      --------------------------------------------------------------------- */
   var PASSORD_SHA256 = "678d3e6eb832dc24a1cd5c5e7298c8c0c4e74f15e7fcdfac7cf6bdc32c45ac80";
 

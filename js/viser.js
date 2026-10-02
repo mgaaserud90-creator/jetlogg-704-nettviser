@@ -752,7 +752,7 @@
           taImotIndeks(window.JETLOGG_INDEKS);
           visIndekshint("Nedtrekkslisten er lest fra den innebygde "
             + "<code>data/index.js</code> (siden er åpnet som lokal fil, der "
-            + "nettleseren ikke l\u00e5r oss hente <code>data/index.json</code> "
+            + "nettleseren ikke lar oss hente <code>data/index.json</code> "
             + "direkte). Alt virker som normalt.");
           return;
         }
