@@ -21,7 +21,7 @@ Det du bør vite om hva passordfeltet faktisk gjør:
 
 | | |
 |---|---|
-| Stopper den som bare bruker siden | **Ja.** Uten passordet kommer du ikke videre til `viser.html`. |
+| Stopper den som skriver adressa i nettleseren | **Delvis.** Forsiden ber om passordet, og `viser.html` sender deg tilbake dit om du ikke har skrevet det. Sperren ligger i nettleseren, så den som leser kildekoden eller slår av JavaScript kommer forbi. |
 | Stopper den som kjenner filnavnet til en datafil | **Nei.** `data/index.json` og hver hendelses-JSON er vanlige statiske filer. Skriver du `.../data/2026-10-01_K83_grouting.json` i nettleseren, får du hele fila – uten passord. |
 | Stopper søkemotorer | **Nei.** GitHub Pages er åpent indekserbart, og repoet er offentlig, så både kildekoden og datafilene ligger fritt tilgjengelig på GitHub i tillegg. |
 

@@ -18,6 +18,23 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>JETLOGG 704 – hendelsesviser</title>
+<script>
+/* --------------------------------------------------------------------------
+   Vakt: viseren skal bare vises til den som har skrevet passordet på
+   forsiden. Uten dette kan hvem som helst gå rett til viser.html og se alt,
+   utenom passordfeltet.
+
+   Dette er en sperre i grensesnittet, ikke et vern. Den som leser kildekoden
+   eller slår av JavaScript kommer forbi. Se README.md, steg 0.
+   -------------------------------------------------------------------------- */
+(function () {
+  try {
+    if (sessionStorage.getItem("jetlogg.innlogga") !== "1") {
+      window.location.replace("index.html");
+    }
+  } catch (e) { /* privat modus uten sessionStorage: slipp gjennom */ }
+})();
+</script>
 <link rel="icon" href="logo/Seabrokers_Dolomiti_RGB.svg">
 <link rel="stylesheet" href="css/style.css">
 </head>
