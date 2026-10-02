@@ -1,0 +1,15 @@
+# Hold linjeslutt likt uansett hvilken maskin repoet sjekkes ut på.
+#
+# Uten denne filen sjekker Windows med core.autocrlf=true ut tekstfilene med
+# CRLF, mens generatorene i kjeden skriver LF. Da ser hver eneste datafil
+# «endret» ut på en fersk klone, og publiseringsskriptet ville skrevet dem om
+# og deretter fått «nothing to commit» fra git. Med eol=lf blir filene like
+# uansett, og en sjekking ut på en ny maskin gir ren arbeidskopi.
+* text=auto
+
+*.json text eol=lf
+*.js   text eol=lf
+*.html text eol=lf
+*.css  text eol=lf
+*.md   text eol=lf
+*.svg  text eol=lf
