@@ -702,7 +702,10 @@
     }
     return (h.dato || "?") + " \u00b7 " + (h.pel || "?") + " \u00b7 "
       + (h.metode || "?") + " \u00b7 " + norsk(h.lengde_cm, 1) + " cm"
-      + (h.stopp ? " \u00b7 " + h.stopp + " pausar" : "");
+      + (h.stopp ? " \u00b7 " + h.stopp + " pausar" : "")
+      /* Ble eksporten tatt mens hendelsen ennaa gikk, er tallet foran ikke
+         lengden paa pelen men hvor langt vi kom. Det skal staa. */
+      + (h.uferdig ? " \u00b7 UFERDIG \u2013 eksporten sluttet her" : "");
   }
 
   function fyllListe() {
