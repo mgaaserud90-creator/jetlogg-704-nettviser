@@ -1,5 +1,5 @@
 {
-  "generert": "2026-10-05T11:55:39",
+  "generert": "2026-10-05T12:21:30",
   "antall": 10,
   "hendelser": [
     {
@@ -8,10 +8,10 @@
       "pel": "K83",
       "metode": "grouting",
       "dato": "2026-10-01",
-      "lengde_cm": 143.2,
-      "snitt_cm_min": 5.95,
+      "lengde_cm": 202.7,
+      "snitt_cm_min": 6.3,
       "stopp": 4,
-      "varighet": "2 t 17 min"
+      "varighet": "2 t 25 min"
     },
     {
       "fil": "2026-10-01_K83_pilotboring.json",
@@ -52,10 +52,10 @@
       "pel": "K93",
       "metode": "grouting",
       "dato": "2026-10-02",
-      "lengde_cm": 90.3,
-      "snitt_cm_min": 7.91,
-      "stopp": 0,
-      "varighet": "15 min"
+      "lengde_cm": 378.8,
+      "snitt_cm_min": 7.01,
+      "stopp": 3,
+      "varighet": "2 t 42 min"
     },
     {
       "fil": "2026-10-02_K93_prejet.json",
@@ -63,10 +63,10 @@
       "pel": "K93",
       "metode": "prejet",
       "dato": "2026-10-02",
-      "lengde_cm": 307.8,
-      "snitt_cm_min": 8.79,
-      "stopp": 1,
-      "varighet": "73 min"
+      "lengde_cm": 376.9,
+      "snitt_cm_min": 8.08,
+      "stopp": 2,
+      "varighet": "1 t 43 min"
     },
     {
       "fil": "2026-10-05_K86_grouting.json",
@@ -74,10 +74,10 @@
       "pel": "K86",
       "metode": "grouting",
       "dato": "2026-10-05",
-      "lengde_cm": 172.3,
-      "snitt_cm_min": 9.13,
-      "stopp": 0,
-      "varighet": "26 min"
+      "lengde_cm": 250.7,
+      "snitt_cm_min": 8.68,
+      "stopp": 1,
+      "varighet": "85 min"
     },
     {
       "fil": "2026-10-05_K86_pilotboring.json",
@@ -85,10 +85,10 @@
       "pel": "K86",
       "metode": "pilotboring",
       "dato": "2026-10-05",
-      "lengde_cm": 18.5,
-      "snitt_cm_min": -12.95,
+      "lengde_cm": 66.2,
+      "snitt_cm_min": -13.6,
       "stopp": 0,
-      "varighet": "17 min"
+      "varighet": "21 min"
     },
     {
       "fil": "2026-10-05_K86_prejet.json",
@@ -96,10 +96,10 @@
       "pel": "K86",
       "metode": "prejet",
       "dato": "2026-10-05",
-      "lengde_cm": 336.0,
-      "snitt_cm_min": 8.62,
+      "lengde_cm": 349.9,
+      "snitt_cm_min": 8.78,
       "stopp": 0,
-      "varighet": "56 min"
+      "varighet": "62 min"
     },
     {
       "fil": "_alle_2026-10-01.json",
