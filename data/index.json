@@ -1,5 +1,5 @@
 {
-  "generert": "2026-10-05T11:49:59",
+  "generert": "2026-10-05T11:55:39",
   "antall": 10,
   "hendelser": [
     {
@@ -8,8 +8,8 @@
       "pel": "K83",
       "metode": "grouting",
       "dato": "2026-10-01",
-      "lengde_cm": 143.4,
-      "snitt_cm_min": 5.96,
+      "lengde_cm": 143.2,
+      "snitt_cm_min": 5.95,
       "stopp": 4,
       "varighet": "2 t 17 min"
     },
@@ -19,10 +19,10 @@
       "pel": "K83",
       "metode": "pilotboring",
       "dato": "2026-10-01",
-      "lengde_cm": 7.0,
-      "snitt_cm_min": -3.06,
+      "lengde_cm": 37.0,
+      "snitt_cm_min": -3.69,
       "stopp": 0,
-      "varighet": "10 min"
+      "varighet": "16 min"
     },
     {
       "fil": "2026-10-01_K83_prejet.json",
