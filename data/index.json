@@ -1,6 +1,6 @@
 {
-  "generert": "2026-10-05T11:40:49",
-  "antall": 10,
+  "generert": "2026-10-05T11:44:14",
+  "antall": 9,
   "hendelser": [
     {
       "fil": "2026-10-01_K83_grouting.json",
@@ -90,12 +90,6 @@
       "kombinert": true,
       "dato": "2026-10-03",
       "antall": 3
-    },
-    {
-      "fil": "_alle_2026-10-04.json",
-      "kombinert": true,
-      "dato": "2026-10-04",
-      "antall": 2
     }
   ]
 }
