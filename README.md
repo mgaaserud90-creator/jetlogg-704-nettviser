@@ -149,6 +149,22 @@ minutt. Du kan følge det under **Actions** i repoet (arbeidsflyten heter
 Det er ingen hemmeligheter å holde styr på og ingen workflow-fil å vedlikeholde
 – GitHub har sin egen, innebygd.
 
+### Cache – derfor står `?v=` i `viser.html`
+
+GitHub Pages ber nettleseren beholde `js/`- og `css/`-filene i ti minutter.
+Uten et cachebrudd kan en gammel `js/viser.js` bli stående lenge etter at den
+er rettet, og da ser grafene feil ut selv om dataene er riktige.
+
+DERFOR: **øk tallet** i `viser.html` hver gang `js/viser.js` (eller
+`data/index.js`) blir endret:
+
+```html
+<script src="js/viser.js?v=3"></script>
+```
+
+Hendelsesfilene selv trenger ingenting – de hentes med `cache: "no-store"`,
+og `data/index.json` likeså. Det er bare koden som er utsatt.
+
 ---
 
 ## 5. Vil du heller bruke Cloudflare Pages? (valgfritt)
