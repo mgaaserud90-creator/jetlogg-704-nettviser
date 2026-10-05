@@ -119,10 +119,13 @@
 <div id="dropsone">Slipp JSON-fila her</div>
 
 <script src="https://cdn.plot.ly/plotly-3.5.0.min.js" charset="utf-8"></script>
-<!-- data/index.js er JS-tvillingen til data/index.json. Den er laget av den
-     samme generatoren, og trengs bare som reserve når siden blir åpnet som
-     lokal fil (file://), der nettleseren blokkerer fetch. -->
-<script src="data/index.js"></script>
-<script src="js/viser.js"></script>
+<!--
+  ?v=-tallet er et CACHEBRUDD. GitHub Pages ber nettleseren beholde js- og
+  css-filene i ti minutter, og uten dette kan en gammel viser.js bli stående
+  lenge etter at den er rettet - da ser grafene feil ut selv om dataene er
+  riktige. ØK TALLET hver gang js/viser.js eller data/index.js blir endret.
+-->
+<script src="data/index.js?v=3"></script>
+<script src="js/viser.js?v=3"></script>
 </body>
 </html>
