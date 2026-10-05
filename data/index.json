@@ -1,6 +1,6 @@
 {
-  "generert": "2026-10-05T09:10:24",
-  "antall": 11,
+  "generert": "2026-10-05T10:31:48",
+  "antall": 8,
   "hendelser": [
     {
       "fil": "2026-10-01_K83_grouting.json",
@@ -52,17 +52,6 @@
       "pel": "K86",
       "metode": "pilotboring",
       "dato": "2026-10-05",
-      "lengde_cm": 15.7,
-      "snitt_cm_min": -14.42,
-      "stopp": 0,
-      "varighet": "17 min"
-    },
-    {
-      "fil": "2026-10-05_K86_pilotboring_1.json",
-      "kombinert": false,
-      "pel": "K86",
-      "metode": "pilotboring",
-      "dato": "2026-10-05",
       "lengde_cm": 15.5,
       "snitt_cm_min": -15.23,
       "stopp": 0,
@@ -70,17 +59,6 @@
     },
     {
       "fil": "2026-10-05_K86_prejet.json",
-      "kombinert": false,
-      "pel": "K86",
-      "metode": "prejet",
-      "dato": "2026-10-05",
-      "lengde_cm": 79.8,
-      "snitt_cm_min": 12.75,
-      "stopp": 0,
-      "varighet": "12 min"
-    },
-    {
-      "fil": "2026-10-05_K86_prejet_1.json",
       "kombinert": false,
       "pel": "K86",
       "metode": "prejet",
@@ -98,12 +76,6 @@
     },
     {
       "fil": "_alle_2026-10-04.json",
-      "kombinert": true,
-      "dato": "2026-10-04",
-      "antall": 2
-    },
-    {
-      "fil": "_alle_2026-10-04_1.json",
       "kombinert": true,
       "dato": "2026-10-04",
       "antall": 2
