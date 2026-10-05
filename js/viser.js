@@ -399,10 +399,29 @@
     return (lo === null) ? null : [lo, hi];
   }
 
-  /* Kort tekst til sammendraget: hvor lang pelen er i alt, og hvor mye av
-     den DENNE hendelsen dekker. Stopper hendelsen for toppen av pelen - slik
-     en grouting gjor naar eksporten blir tatt mens den ennaa kjoerer - sier vi
-     det rett ut i stedet for at grafen skal se komplett ut. */
+  /* Den grunneste dybden noen jetting (prejet eller grouting) naadde for
+     denne pelen - pelens "arbeidstopp". Boret gaar til bunnen, jettingen gaar
+     opp hit. Stopper en prejet eller grouting langt under dette, er den
+     kuttet - typisk fordi eksporten ble tatt mens den ennaa kjoerte. Vi
+     sammenligner mot jettingen og ikke mot bakken: jettingen stopper et par
+     desimeter under toppen med vilje, og det er ikke en feil. */
+  function arbeidstopp(pel) {
+    var beste = null;
+    if (!pel) { return null; }
+    (indeks || []).forEach(function (h) {
+      if (h.kombinert || h.pel !== pel) { return; }
+      if (h.metode !== "prejet" && h.metode !== "grouting") { return; }
+      [h.dybde_fra_cm, h.dybde_til_cm].forEach(function (v) {
+        if (v === null || v === undefined || !isFinite(v)) { return; }
+        beste = (beste === null) ? v : Math.min(beste, v);
+      });
+    });
+    return beste;
+  }
+
+  /* Kort tekst til sammendraget: hvor dyp pelen er i alt, og hvor mye av den
+     DENNE hendelsen dekker. Stopper hendelsen for toppen, sier vi det rett ut
+     i stedet for at grafen skal se komplett ut. */
   function pelensTekst(d) {
     var h = d || {};
     var egne = [h.dybde_fra_cm, h.dybde_til_cm].filter(function (v) {
@@ -416,12 +435,17 @@
         : "\u2013";
     }
     var tekst = norsk(o[0], 0) + " \u2192 " + norsk(o[1], 0) + " cm i alt";
-    if (egne.length) {
-      /* grunnest i hendelsen - naar den ikke naar pelens topp, mangler det */
-      var stopper = Math.min.apply(null, egne) - o[0];
-      if (stopper > 5) {
-        tekst += " \u2013 denne stopper " + norsk(stopper, 0)
-          + " cm for toppen";
+    if (egne.length && h.metode !== "pilotboring") {
+      var stoppet = Math.min.apply(null, egne);
+      var mal = arbeidstopp(h.pel);
+      if (mal !== null) {
+        tekst += " \u2013 jettingen gikk til " + norsk(mal, 0) + " cm";
+        /* Stopper denne merkbart under det jettingen naadde, sier vi tallet
+           rett ut. Det er hele signalet: eksporten ble tatt mens den kjoerte,
+           og resten kommer i neste eksport. */
+        if (stoppet - mal > 40) {
+          tekst += ", denne bare til " + norsk(stoppet, 0) + " cm";
+        }
       }
     }
     return tekst;
