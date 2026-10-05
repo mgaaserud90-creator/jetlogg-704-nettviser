@@ -5,6 +5,7 @@
   "metode": "prejet",
   "start": "2026-10-05T08:00:53",
   "stopp": "2026-10-05T09:02:35",
+  "uferdig": false,
   "varighet_s": 3702.0,
   "varighet": "62 min",
   "dybde_fra_cm": 399.4,

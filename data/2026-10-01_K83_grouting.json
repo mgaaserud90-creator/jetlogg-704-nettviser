@@ -5,6 +5,7 @@
   "metode": "grouting",
   "start": "2026-10-01T13:07:26",
   "stopp": "2026-10-01T15:32:13",
+  "uferdig": false,
   "varighet_s": 8687.0,
   "varighet": "2 t 25 min",
   "dybde_fra_cm": 274.5,

@@ -5,6 +5,7 @@
   "metode": "pilotboring",
   "start": "2026-10-01T16:42:04",
   "stopp": "2026-10-01T18:44:01",
+  "uferdig": false,
   "varighet_s": 7317.0,
   "varighet": "2 t 2 min",
   "dybde_fra_cm": 0.2,
