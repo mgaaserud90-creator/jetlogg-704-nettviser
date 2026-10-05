@@ -1,5 +1,5 @@
 {
-  "generert": "2026-10-05T11:10:35",
+  "generert": "2026-10-05T11:40:49",
   "antall": 10,
   "hendelser": [
     {
@@ -52,10 +52,10 @@
       "pel": "K86",
       "metode": "grouting",
       "dato": "2026-10-05",
-      "lengde_cm": 64.0,
-      "snitt_cm_min": 11.99,
+      "lengde_cm": 172.3,
+      "snitt_cm_min": 9.13,
       "stopp": 0,
-      "varighet": "10 min"
+      "varighet": "26 min"
     },
     {
       "fil": "2026-10-05_K86_pilotboring.json",
@@ -74,7 +74,7 @@
       "pel": "K86",
       "metode": "prejet",
       "dato": "2026-10-05",
-      "lengde_cm": 335.7,
+      "lengde_cm": 336.0,
       "snitt_cm_min": 8.62,
       "stopp": 0,
       "varighet": "56 min"
