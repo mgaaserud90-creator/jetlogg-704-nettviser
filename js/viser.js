@@ -61,6 +61,18 @@
       .replace(/"/g, AMP + "quot;");
   }
 
+  /* Dybdeaksen for én hendelse: pelens fulle omfang naar vi kjenner det,
+     ellers hendelsens eget - og alltid vidt nok til at kurven faar plass. */
+  function dybdeakse(d, dybde) {
+    var hi = topp(dybde), lo = bunn(dybde);
+    var o = pelOmfang(d && d.pel);
+    if (o) {
+      hi = Math.max(hi, o[1] * 1.04);
+      lo = Math.min(lo, o[0]);
+    }
+    return [hi, lo];
+  }
+
   function grenser(arr, ekstra) {
     var v = arr.filter(function (x) { return x !== null && isFinite(x); });
     if (!v.length) { return [0, 1]; }
@@ -327,7 +339,7 @@
       },
       yaxis: {
         title: { text: "Dybde [cm] (0 \u00f8verst)", font: { color: FARGAR.dybde } },
-        range: [topp(dybde), bunn(dybde)], tickfont: { color: FARGAR.dybde },
+        range: dybdeakse(d, dybde), tickfont: { color: FARGAR.dybde },
         gridcolor: "#eef1f5", zeroline: false
       }
     };
@@ -363,6 +375,56 @@
     var p = dybde.filter(function (v) { return v !== null && isFinite(v); });
     var b = p.length ? Math.min.apply(null, p) : 0;
     return Math.min(0, b);
+  }
+
+  /* Pelens fulle dybdeomfang: den grunneste og den dypeste dybden over ALLE
+     hendelsene med samme pelnavn - boringen, prejeten og groutingen. Brukes
+     som fast dybdeakse for hver av dem.
+
+     Uten dette ble hver graf skalert til sitt eget utsnitt. En grouting som
+     stoppet halvveis saa da like komplett ut som en som gikk til bunnen, og
+     en prejet som gikk hele pelen saa lengre ut enn den var. Med pelens eget
+     omfang ser en med én gang hvor mye som mangler. */
+  function pelOmfang(pel) {
+    var lo = null, hi = null;
+    if (!pel) { return null; }
+    (indeks || []).forEach(function (h) {
+      if (h.kombinert || h.pel !== pel) { return; }
+      [h.dybde_fra_cm, h.dybde_til_cm].forEach(function (v) {
+        if (v === null || v === undefined || !isFinite(v)) { return; }
+        lo = (lo === null) ? v : Math.min(lo, v);
+        hi = (hi === null) ? v : Math.max(hi, v);
+      });
+    });
+    return (lo === null) ? null : [lo, hi];
+  }
+
+  /* Kort tekst til sammendraget: hvor lang pelen er i alt, og hvor mye av
+     den DENNE hendelsen dekker. Stopper hendelsen for toppen av pelen - slik
+     en grouting gjor naar eksporten blir tatt mens den ennaa kjoerer - sier vi
+     det rett ut i stedet for at grafen skal se komplett ut. */
+  function pelensTekst(d) {
+    var h = d || {};
+    var egne = [h.dybde_fra_cm, h.dybde_til_cm].filter(function (v) {
+      return v !== null && v !== undefined && isFinite(v);
+    });
+    var o = pelOmfang(h.pel);
+    if (!o) {
+      return egne.length
+        ? norsk(Math.min.apply(null, egne), 0) + " \u2192 "
+          + norsk(Math.max.apply(null, egne), 0) + " cm"
+        : "\u2013";
+    }
+    var tekst = norsk(o[0], 0) + " \u2192 " + norsk(o[1], 0) + " cm i alt";
+    if (egne.length) {
+      /* grunnest i hendelsen - naar den ikke naar pelens topp, mangler det */
+      var stopper = Math.min.apply(null, egne) - o[0];
+      if (stopper > 5) {
+        tekst += " \u2013 denne stopper " + norsk(stopper, 0)
+          + " cm for toppen";
+      }
+    }
+    return tekst;
   }
 
   /* Haker på x-aksen: jevnt fordelt over VIST tid (ikke over tallet på punkt),
@@ -413,6 +475,7 @@
       ["Varighet", esc(d.varighet)],
       ["Dybde", norsk(d.dybde_fra_cm, 0) + " \u2192 " + norsk(d.dybde_til_cm, 0) + " cm"],
       ["Utelatt", norsk(d.utelatt_pst, 1) + " % av tiden"],
+      ["Pelen", pelensTekst(d)],
       ["Pausar", String(stopp.length)]
     ];
 
