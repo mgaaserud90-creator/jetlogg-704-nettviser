@@ -1,6 +1,6 @@
 {
-  "generert": "2026-10-05T15:46:18",
-  "antall": 14,
+  "generert": "2026-10-06T08:25:45",
+  "antall": 16,
   "hendelser": [
     {
       "fil": "2026-10-01_K83_grouting.json",
@@ -106,13 +106,13 @@
       "pel": "K82",
       "metode": "grouting",
       "dato": "2026-10-05",
-      "lengde_cm": 47.6,
-      "uferdig": true,
+      "lengde_cm": 153.3,
+      "uferdig": false,
       "dybde_fra_cm": 206.0,
-      "dybde_til_cm": 158.0,
-      "snitt_cm_min": 7.84,
+      "dybde_til_cm": 51.2,
+      "snitt_cm_min": 6.15,
       "stopp": 0,
-      "varighet": "9 min"
+      "varighet": "51 min"
     },
     {
       "fil": "2026-10-05_K82_pilotboring.json",
@@ -120,11 +120,11 @@
       "pel": "K82",
       "metode": "pilotboring",
       "dato": "2026-10-05",
-      "lengde_cm": 26.0,
+      "lengde_cm": 27.6,
       "uferdig": false,
       "dybde_fra_cm": 0.1,
       "dybde_til_cm": 206.2,
-      "snitt_cm_min": -5.29,
+      "snitt_cm_min": -5.39,
       "stopp": 0,
       "varighet": "16 min"
     },
@@ -134,11 +134,11 @@
       "pel": "K82",
       "metode": "prejet",
       "dato": "2026-10-05",
-      "lengde_cm": 152.2,
+      "lengde_cm": 153.8,
       "uferdig": false,
       "dybde_fra_cm": 205.5,
       "dybde_til_cm": 50.2,
-      "snitt_cm_min": 6.79,
+      "snitt_cm_min": 6.8,
       "stopp": 0,
       "varighet": "29 min"
     },
@@ -185,10 +185,30 @@
       "varighet": "62 min"
     },
     {
+      "fil": "2026-10-06_K90_pilotboring.json",
+      "kombinert": false,
+      "pel": "K90",
+      "metode": "pilotboring",
+      "dato": "2026-10-06",
+      "lengde_cm": 47.1,
+      "uferdig": false,
+      "dybde_fra_cm": -0.0,
+      "dybde_til_cm": 431.0,
+      "snitt_cm_min": -4.46,
+      "stopp": 0,
+      "varighet": "30 min"
+    },
+    {
       "fil": "_alle_2026-10-01.json",
       "kombinert": true,
       "dato": "2026-10-01",
       "antall": 8
+    },
+    {
+      "fil": "_alle_2026-10-02.json",
+      "kombinert": true,
+      "dato": "2026-10-02",
+      "antall": 9
     }
   ]
 }
