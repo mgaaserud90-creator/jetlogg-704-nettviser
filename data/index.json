@@ -1,6 +1,6 @@
 {
-  "generert": "2026-10-07T07:45:31",
-  "antall": 22,
+  "generert": "2026-10-08T07:41:07",
+  "antall": 26,
   "hendelser": [
     {
       "fil": "2026-10-01_K83_grouting.json",
@@ -255,18 +255,60 @@
       "varighet": "70 min"
     },
     {
+      "fil": "2026-10-07_K84_grouting.json",
+      "kombinert": false,
+      "pel": "K84",
+      "metode": "grouting",
+      "dato": "2026-10-07",
+      "lengde_cm": 301.1,
+      "uferdig": false,
+      "dybde_fra_cm": 335.1,
+      "dybde_til_cm": 49.7,
+      "snitt_cm_min": 6.71,
+      "stopp": 3,
+      "varighet": "1 t 46 min"
+    },
+    {
       "fil": "2026-10-07_K84_pilotboring.json",
       "kombinert": false,
       "pel": "K84",
       "metode": "pilotboring",
       "dato": "2026-10-07",
-      "lengde_cm": 92.9,
+      "lengde_cm": 314.8,
       "uferdig": false,
-      "dybde_fra_cm": 50.1,
-      "dybde_til_cm": 143.0,
-      "snitt_cm_min": -50.22,
+      "dybde_fra_cm": 20.2,
+      "dybde_til_cm": 335.0,
+      "snitt_cm_min": -54.28,
       "stopp": 0,
-      "varighet": "2 min"
+      "varighet": "6 min"
+    },
+    {
+      "fil": "2026-10-07_K88_pilotboring.json",
+      "kombinert": false,
+      "pel": "K88",
+      "metode": "pilotboring",
+      "dato": "2026-10-07",
+      "lengde_cm": 37.1,
+      "uferdig": false,
+      "dybde_fra_cm": 0.1,
+      "dybde_til_cm": 11.8,
+      "snitt_cm_min": -9.3,
+      "stopp": 0,
+      "varighet": "64 min"
+    },
+    {
+      "fil": "2026-10-07_K88_prejet.json",
+      "kombinert": false,
+      "pel": "K88",
+      "metode": "prejet",
+      "dato": "2026-10-07",
+      "lengde_cm": 89.0,
+      "uferdig": false,
+      "dybde_fra_cm": 420.2,
+      "dybde_til_cm": 300.9,
+      "snitt_cm_min": 14.96,
+      "stopp": 0,
+      "varighet": "18 min"
     },
     {
       "fil": "_alle_2026-10-01.json",
@@ -285,6 +327,12 @@
       "kombinert": true,
       "dato": "2026-10-03",
       "antall": 12
+    },
+    {
+      "fil": "_alle_2026-10-04.json",
+      "kombinert": true,
+      "dato": "2026-10-04",
+      "antall": 15
     }
   ]
 }
