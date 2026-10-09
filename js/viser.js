@@ -377,19 +377,20 @@
     return Math.min(0, b);
   }
 
-  /* Pelens fulle dybdeomfang: den grunneste og den dypeste dybden over ALLE
-     hendelsene med samme pelnavn - boringen, prejeten og groutingen. Brukes
-     som fast dybdeakse for hver av dem.
+  /* Pelens dybdeomfang: den grunneste og den dypeste dybden JETTINGEN naar -
+     prejet og grouting - for samme pelnavn. Brukes som fast dybdeakse og som
+     "Pelen: ... i alt" i sammendraget.
 
-     Uten dette ble hver graf skalert til sitt eget utsnitt. En grouting som
-     stoppet halvveis saa da like komplett ut som en som gikk til bunnen, og
-     en prejet som gikk hele pelen saa lengre ut enn den var. Med pelens eget
-     omfang ser en med én gang hvor mye som mangler. */
+     Pilotboringen er holdt UTE med vilje. Den gaar fra bakken (0) og ned, og
+     dro 0 med inn i omfanget. Da sa en grouting som gikk 431 -> 50 ut som om
+     den stoppet halvveis, mens pelen i virkeligheten er 50-431. Det er
+     jettingen som DEFINERER pelen; hullet under er bare hullet. */
   function pelOmfang(pel) {
     var lo = null, hi = null;
     if (!pel) { return null; }
     (indeks || []).forEach(function (h) {
       if (h.kombinert || h.pel !== pel) { return; }
+      if (h.metode !== "prejet" && h.metode !== "grouting") { return; }
       [h.dybde_fra_cm, h.dybde_til_cm].forEach(function (v) {
         if (v === null || v === undefined || !isFinite(v)) { return; }
         lo = (lo === null) ? v : Math.min(lo, v);
@@ -399,29 +400,10 @@
     return (lo === null) ? null : [lo, hi];
   }
 
-  /* Den grunneste dybden noen jetting (prejet eller grouting) naadde for
-     denne pelen - pelens "arbeidstopp". Boret gaar til bunnen, jettingen gaar
-     opp hit. Stopper en prejet eller grouting langt under dette, er den
-     kuttet - typisk fordi eksporten ble tatt mens den ennaa kjoerte. Vi
-     sammenligner mot jettingen og ikke mot bakken: jettingen stopper et par
-     desimeter under toppen med vilje, og det er ikke en feil. */
-  function arbeidstopp(pel) {
-    var beste = null;
-    if (!pel) { return null; }
-    (indeks || []).forEach(function (h) {
-      if (h.kombinert || h.pel !== pel) { return; }
-      if (h.metode !== "prejet" && h.metode !== "grouting") { return; }
-      [h.dybde_fra_cm, h.dybde_til_cm].forEach(function (v) {
-        if (v === null || v === undefined || !isFinite(v)) { return; }
-        beste = (beste === null) ? v : Math.min(beste, v);
-      });
-    });
-    return beste;
-  }
-
-  /* Kort tekst til sammendraget: hvor dyp pelen er i alt, og hvor mye av den
-     DENNE hendelsen dekker. Stopper hendelsen for toppen, sier vi det rett ut
-     i stedet for at grafen skal se komplett ut. */
+  /* Kort tekst til sammendraget: pelens omfang (det jettingen dekker) og hvor
+     mye av det DENNE hendelsen dekker. Stopper hendelsen merkbart over bunnen
+     av omfanget, er eksporten tatt mens den ennaa gikk - da sier vi tallet
+     rett ut i stedet for at grafen skal se komplett ut. */
   function pelensTekst(d) {
     var h = d || {};
     var egne = [h.dybde_fra_cm, h.dybde_til_cm].filter(function (v) {
@@ -437,15 +419,8 @@
     var tekst = norsk(o[0], 0) + " \u2192 " + norsk(o[1], 0) + " cm i alt";
     if (egne.length && h.metode !== "pilotboring") {
       var stoppet = Math.min.apply(null, egne);
-      var mal = arbeidstopp(h.pel);
-      if (mal !== null) {
-        tekst += " \u2013 jettingen gikk til " + norsk(mal, 0) + " cm";
-        /* Stopper denne merkbart under det jettingen naadde, sier vi tallet
-           rett ut. Det er hele signalet: eksporten ble tatt mens den kjoerte,
-           og resten kommer i neste eksport. */
-        if (stoppet - mal > 40) {
-          tekst += ", denne bare til " + norsk(stoppet, 0) + " cm";
-        }
+      if (stoppet - o[0] > 40) {
+        tekst += ", denne bare til " + norsk(stoppet, 0) + " cm";
       }
     }
     return tekst;
@@ -494,7 +469,7 @@
       ["Pel", esc(d.pel)],
       ["Metode", esc(d.metode)],
       ["Dato", esc(d.dato)],
-      ["Lengde", norsk(d.lengde_cm, 1) + " cm (" + retning + ")"],
+      ["Lengde", norsk(dekningslengde(d), 1) + " cm (" + retning + ")"],
       ["Snittfart", norsk(d.snitt_cm_min, 2) + " cm/min"],
       ["Varighet", esc(d.varighet)],
       ["Dybde", norsk(d.dybde_fra_cm, 0) + " \u2192 " + norsk(d.dybde_til_cm, 0) + " cm"],
