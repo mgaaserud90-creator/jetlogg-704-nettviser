@@ -1,0 +1,91 @@
+# ===========================================================================
+#  Rigg: hent eksporten fra Gmail, dekod til hendelses-JSON og publiser til
+#  nettstedet - uten kontor-PC. Kjoerer paa GitHub sine runnere hvert kvarter.
+#
+#  Erstatter kontor-pc\kjor_alt.bat (+ Oppgaveplanleggeren paa kontor-PC-en).
+#
+#  KREVER to secrets (Settings > Secrets and variables > Actions):
+#      GMAIL_USER            f.eks. borrigg170@gmail.com
+#      GMAIL_APP_PASSWORD    Gmails app-passord (IKKE kontopassordet)
+#
+#  Tilstandsfilene rigg\behandlet_epost.txt og rigg\behandlet_filer.txt husker
+#  hva som alt er hentet. Jobben committer dem selv; uten det ville hele
+#  postkassen blitt skannet paa nytt hver kjoering.
+# ===========================================================================
+name: Rigg - hent og publiser
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"     # MERK: UTC. Hvert 15. minutt.
+  workflow_dispatch:           # og en "Run workflow"-knapp i Actions-fanen
+
+# Aldri to kjoeringer samtidig som skriver til data\
+concurrency:
+  group: rigg-hent
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  hent:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Sjekk ut repoet
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Sett opp Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Installer avhengigheter
+        run: pip install -r rigg/requirements.txt
+
+      - name: Kontroller at hemmelighetene finnes
+        env:
+          BRUKER: ${{ secrets.GMAIL_USER }}
+          NOKKEL: ${{ secrets.GMAIL_APP_PASSWORD }}
+        run: |
+          if [ -z "$BRUKER" ] || [ -z "$NOKKEL" ]; then
+            echo "::error::Mangler secrets GMAIL_USER / GMAIL_APP_PASSWORD."
+            echo "Legg dem inn under Settings > Secrets and variables > Actions,"
+            echo "saa kjorer jobben videre ved neste runde."
+            exit 1
+          fi
+
+      - name: Skriv epost.cred fra secrets
+        env:
+          BRUKER: ${{ secrets.GMAIL_USER }}
+          NOKKEL: ${{ secrets.GMAIL_APP_PASSWORD }}
+        run: |
+          umask 077
+          printf 'SMTP_USER=%s\nSMTP_KEY=%s\n' "$BRUKER" "$NOKKEL" > rigg/epost.cred
+
+      - name: Hent, dekod og skriv data/
+        run: python rigg/hent_og_plott.py --still --json-dir data
+
+      - name: Fjern epost.cred
+        if: always()
+        run: rm -f rigg/epost.cred
+
+      - name: Commit og push
+        run: |
+          git config user.name  "rigg-bot"
+          git config user.email "rigg-bot@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Ingenting nytt aa publisere - data/ er i takt."
+            exit 0
+          fi
+          git commit -m "Rigg: hentet og publisert hendelser fra Gmail"
+          # Har kontor-PC-en (eller et manuelt push) rukket aa pushe i
+          # mellomtiden, blir pushen avvist. Da henter vi inn og prover en gang.
+          if ! git push; then
+            git pull --rebase --autostash
+            git push
+          fi

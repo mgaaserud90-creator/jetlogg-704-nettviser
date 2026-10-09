@@ -3,3 +3,16 @@
 node_modules/
 .DS_Store
 Thumbs.db
+
+# Rigg-kjeden (GitHub Actions).
+# Skal I repoet (tilstand som maa huskes mellom kjoeringer):
+#   data/, rigg/behandlet_epost.txt, rigg/behandlet_filer.txt
+# Skal IKKE i repoet:
+rigg/hentet/
+rigg/arbeid/
+rigg/plot/
+rigg/logg_*.txt
+rigg/*.cred
+rigg/__pycache__/
+__pycache__/
+*.pyc

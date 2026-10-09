@@ -1,0 +1,10 @@
+# Avhengigheter for rigg-kjeden paa GitHub Actions.
+#
+#   hent_og_plott.py  -> eksporter_hendelser.py -> regenerer_acron_plott.py
+#
+# matplotlib maa vaere med selv om denne jobben aldri tegner PNG-er: eksporter_hendelser
+# importerer regenerer_acron_plott, og den importerer matplotlib oeverst i fila.
+# plotly trengs IKKE her - den importeres bare inne i HTML-funksjonen, som ikke kjoeres.
+numpy
+pandas
+matplotlib
