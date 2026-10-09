@@ -696,12 +696,27 @@
 
   /* ------------------------------------------------------------------ 5) */
 
+  /* Lengden som vises i nedtrekket: hvor langt langs PELEN hendelsen naar -
+     fra dybden den startet til dybden den sluttet. Det er ikke det samme som
+     lengde_cm, som er summen av seksjonene som teller med (tallet i plottets
+     overskrift): en grouting som gaar att og fram, eller som har uryddig-faser
+     utelatt, kan ha lengde_cm klart mindre enn strekket den faktisk dekker.
+     Faller tilbake til lengde_cm naar dybdefeltaene mangler (eldre indeks). */
+  function dekningslengde(h) {
+    var f = h.dybde_fra_cm, t = h.dybde_til_cm;
+    if (f !== null && f !== undefined && isFinite(f)
+        && t !== null && t !== undefined && isFinite(t)) {
+      return Math.abs(f - t);
+    }
+    return h.lengde_cm;
+  }
+
   function etikett(h) {
     if (h.kombinert) {
       return (h.dato || "?") + " \u00b7 kombinert (" + (h.antall || "?") + " hendelser)";
     }
     return (h.dato || "?") + " \u00b7 " + (h.pel || "?") + " \u00b7 "
-      + (h.metode || "?") + " \u00b7 " + norsk(h.lengde_cm, 1) + " cm"
+      + (h.metode || "?") + " \u00b7 " + norsk(dekningslengde(h), 1) + " cm"
       + (h.stopp ? " \u00b7 " + h.stopp + " pausar" : "")
       /* Ble eksporten tatt mens hendelsen ennaa gikk, er tallet foran ikke
          lengden paa pelen men hvor langt vi kom. Det skal staa. */
