@@ -15,6 +15,10 @@
 
   var DATA = "data/";
   var LOGO = "logo/Seabrokers_Dolomiti_RGB.svg";
+  /* Import av en ferdig eksport (zip) skjer i GitHub Actions – nettsiden er
+     statisk og kan ikke pakke ut filer selv. Knappen åpner importjobben. */
+  var IMPORT_URL = "https://github.com/mgaaserud90-creator/jetlogg-704-nettviser"
+    + "/actions/workflows/rigg-import.yml";
   var FARGAR = {
     dybde: "#a052ad",
     uryddig: "#8c8c8c"
@@ -705,8 +709,18 @@
     var sok = (sokFelt.value || "").trim().toLowerCase();
     var sokLett = sok.replace(/[^a-z0-9]/g, "");
 
+    /* Datofilteret ved siden av søkefeltet. Feltene gir "AAAA-MM-DD", som
+       kan sammenlignes som tekst. */
+    var fraFelt = document.getElementById("dato-fra");
+    var tilFelt = document.getElementById("dato-til");
+    var fra = (fraFelt && fraFelt.value) || "";
+    var til = (tilFelt && tilFelt.value) || "";
+
     var alle = indeks.filter(function (h) { return !h.kombinert; });
     var treff = alle.filter(function (h) {
+      var dag = (h.dato || "").slice(0, 10);
+      if (fra && (!dag || dag < fra)) { return false; }
+      if (til && (!dag || dag > til)) { return false; }
       if (!sok) { return true; }
       var rad = [h.pel, h.metode, h.dato, h.fil].join(" ").toLowerCase();
       if (rad.indexOf(sok) !== -1) { return true; }
@@ -714,13 +728,20 @@
       return !!sokLett && lett.indexOf(sokLett) !== -1;
     });
 
+    var filtrert = !!sok || !!fra || !!til;
+
     var html = "";
     if (!treff.length) {
+      var hva = [];
+      if (sok) { hva.push("\u00ab" + sok + "\u00bb"); }
+      if (fra) { hva.push("fra " + fra); }
+      if (til) { hva.push("til " + til); }
       html = '<option value="">(ingen treff)</option>';
       velg.innerHTML = html;
       treffEl.className = "treff tom";
-      treffEl.textContent = 'Ingen hendelser passer "' + sok + '". '
-        + "Prøv f.eks. K83, 83, grouting eller 2026-10-01.";
+      treffEl.textContent = "Ingen hendelser passer "
+        + (hva.join(", ") || "filteret")
+        + ". Prøv f.eks. K83, 83, grouting eller 2026-10-01.";
       return;
     }
     html = '<option value="">Velg hendelse (' + treff.length + " av "
@@ -731,13 +752,13 @@
     velg.innerHTML = html;
 
     treffEl.className = "treff";
-    treffEl.textContent = sok
+    treffEl.textContent = filtrert
       ? (treff.length + " treff av " + alle.length + " hendelser")
       : (alle.length + " hendelser i listen");
 
     if (valgtFil && treff.some(function (h) { return h.fil === valgtFil; })) {
       velg.value = valgtFil;
-    } else if (treff.length === 1 && sok) {
+    } else if (treff.length === 1 && filtrert) {
       /* et entydig treff – vis det med en gang */
       velg.value = treff[0].fil;
       hentOgVis(treff[0].fil);
@@ -865,6 +886,16 @@
     if (e.target.value) { hentOgVis(e.target.value); }
   });
   document.getElementById("sok").addEventListener("input", fyllListe);
+  document.getElementById("dato-fra").addEventListener("change", fyllListe);
+  document.getElementById("dato-til").addEventListener("change", fyllListe);
+  document.getElementById("kn-dato-null").addEventListener("click", function () {
+    document.getElementById("dato-fra").value = "";
+    document.getElementById("dato-til").value = "";
+    fyllListe();
+  });
+  document.getElementById("kn-import").addEventListener("click", function () {
+    window.open(IMPORT_URL, "_blank", "noopener");
+  });
   document.getElementById("fil").addEventListener("change", function (e) {
     lesFil(e.target.files && e.target.files[0]);
   });

@@ -86,7 +86,8 @@ a { color: var(--bla); }
 .felt { margin-bottom: 14px; }
 .felt label { display: block; font-size: 13px; font-weight: 600;
               margin-bottom: 5px; color: #2c3947; }
-input[type="password"], input[type="text"], input[type="search"], select {
+input[type="password"], input[type="text"], input[type="search"],
+input[type="date"], select {
   width: 100%;
   padding: 9px 11px;
   border: 1px solid var(--kant);
@@ -156,6 +157,17 @@ button, .knapp {
 .gruppe.grow { flex: 1 1 260px; min-width: 200px; }
 .gruppe label { font-size: 12px; font-weight: 600; color: #2c3947; }
 .gruppe select, .gruppe input { max-width: 100%; }
+
+/* datofilteret ved siden av søkefeltet */
+.dato { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.dato input[type="date"] {
+  width: auto;
+  padding: 7px 8px;
+  font-size: 13.5px;
+  font-variant-numeric: tabular-nums;
+}
+.dato .datotil { color: var(--graa); font-size: 13px; }
+.dato .knapp-enkel { padding: 7px 10px; font-size: 13px; }
 
 .velg { font-size: 14px; min-width: 320px; }
 
