@@ -67,11 +67,15 @@ jobs:
           printf 'SMTP_USER=%s\nSMTP_KEY=%s\n' "$BRUKER" "$NOKKEL" > rigg/epost.cred
 
       - name: Hent, dekod og skriv data/
-        run: python rigg/hent_og_plott.py --still --json-dir data
+        run: python rigg/hent_og_plott.py --still --json-dir data --slett-arbeid
 
       - name: Fjern epost.cred
         if: always()
         run: rm -f rigg/epost.cred
+
+      - name: Rydd arbeidsfiler (utpakket csv og mottatte zipper)
+        if: always()
+        run: rm -rf rigg/arbeid rigg/hentet
 
       - name: Commit og push
         run: |

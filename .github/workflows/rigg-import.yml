@@ -1,0 +1,99 @@
+# ===========================================================================
+#  JETLOGG - importer en eksport MANUELT (eldre eller storre data).
+#
+#  Kjoeres fra Actions-fanen: "Run workflow", og du oppgir enten
+#      * en sti til en zip som ligger i repoet (f.eks. import/plant1.zip), eller
+#      * en https-URL (f.eks. en Release-asset - taaler filer opptil 2 GB).
+#
+#  Vinduet er BEGRENSET til 20 dogn. Er eksporten storre, stoppes jobben for
+#  den dekoder noe. Bruk det lokale skriptet rigg\import_del_opp.py for
+#  stoerre mengder - det deler opp i biter paa 20 dogn og kan ta 200+ dogn.
+#
+#  Alt som ikke skal i repoet blir slettet: nedlastet zip, utpakket csv og
+#  arbeidsmappa. Bare data\ committes.
+# ===========================================================================
+name: JETLOGG - importer zip (manuell)
+
+on:
+  workflow_dispatch:
+    inputs:
+      kilde:
+        description: "Sti i repoet (import/fil.zip) eller https-URL"
+        required: true
+      maks_dager:
+        description: "Storste vindu som godtas, i dogn"
+        required: false
+        default: "20"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rigg-import
+  cancel-in-progress: false
+
+jobs:
+  importer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Sjekk ut repoet
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Sett opp Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Installer avhengigheter
+        run: pip install -r rigg/requirements.txt
+
+      - name: Hent zip-en
+        env:
+          KILDE: ${{ inputs.kilde }}
+        run: |
+          mkdir -p rigg/import_tmp
+          case "$KILDE" in
+            http://*|https://*)
+              echo "Laster ned: $KILDE"
+              curl -fL --retry 3 --retry-delay 5 -o rigg/import_tmp/import.zip "$KILDE" ;;
+            *)
+              test -f "$KILDE" || { echo "::error::finner ikke \"$KILDE\" i repoet"; exit 1; }
+              cp "$KILDE" rigg/import_tmp/import.zip ;;
+          esac
+          ls -l rigg/import_tmp
+
+      - name: Kontroller vinduet (maks dogn)
+        env:
+          MAKS: ${{ inputs.maks_dager }}
+        run: python rigg/vindu.py rigg/import_tmp/import.zip --maks-dager "$MAKS"
+
+      - name: Dekod og skriv data/
+        run: |
+          python rigg/hent_og_plott.py --still --json-dir data \
+            --fra-zip rigg/import_tmp/import.zip --slett-arbeid
+
+      - name: Rydd opp (zip, utpakket csv og arbeidsfiler)
+        if: always()
+        run: |
+          rm -rf rigg/import_tmp rigg/arbeid rigg/hentet
+          echo "Ryddet. Igjen i rigg/:"
+          ls -la rigg/ || true
+
+      - name: Commit og push
+        run: |
+          git config user.name  "rigg-bot"
+          git config user.email "rigg-bot@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Ingenting nytt aa publisere."
+            exit 0
+          fi
+          git commit -m "Import: dekodet ${{ inputs.kilde }} (vindu kontrollert mot ${{ inputs.maks_dager }} dogn)"
+          if ! git push; then
+            git pull --rebase --autostash
+            git push
+          fi

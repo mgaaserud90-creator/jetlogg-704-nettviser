@@ -11,6 +11,8 @@ Thumbs.db
 rigg/hentet/
 rigg/arbeid/
 rigg/plot/
+rigg/import_tmp/
+rigg/import_*/
 rigg/logg_*.txt
 rigg/*.cred
 rigg/__pycache__/
