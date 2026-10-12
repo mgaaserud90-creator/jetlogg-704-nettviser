@@ -13,6 +13,8 @@ rigg/arbeid/
 rigg/plot/
 rigg/import_tmp/
 rigg/import_*/
+rigg/*.zip
+rigg/*.csv
 rigg/logg_*.txt
 rigg/*.cred
 rigg/__pycache__/
