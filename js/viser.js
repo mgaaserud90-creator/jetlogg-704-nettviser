@@ -15,10 +15,6 @@
 
   var DATA = "data/";
   var LOGO = "logo/Seabrokers_Dolomiti_RGB.svg";
-  /* Import av en ferdig eksport (zip) skjer i GitHub Actions – nettsiden er
-     statisk og kan ikke pakke ut filer selv. Knappen åpner importjobben. */
-  var IMPORT_URL = "https://github.com/mgaaserud90-creator/jetlogg-704-nettviser"
-    + "/actions/workflows/rigg-import.yml";
   var FARGAR = {
     dybde: "#a052ad",
     uryddig: "#8c8c8c"
@@ -892,9 +888,6 @@
     document.getElementById("dato-fra").value = "";
     document.getElementById("dato-til").value = "";
     fyllListe();
-  });
-  document.getElementById("kn-import").addEventListener("click", function () {
-    window.open(IMPORT_URL, "_blank", "noopener");
   });
   document.getElementById("fil").addEventListener("change", function (e) {
     lesFil(e.target.files && e.target.files[0]);
