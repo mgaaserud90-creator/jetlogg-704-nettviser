@@ -1,6 +1,6 @@
 {
-  "generert": "2026-10-14T12:22:42",
-  "antall": 105,
+  "generert": "2026-10-15T12:09:33",
+  "antall": 109,
   "hendelser": [
     {
       "fil": "2026-08-17_G49_grouting.json",
@@ -1319,6 +1319,48 @@
       "varighet": "24 min"
     },
     {
+      "fil": "2026-10-14_K92x_grouting.json",
+      "kombinert": false,
+      "pel": "K92x",
+      "metode": "grouting",
+      "dato": "2026-10-14",
+      "lengde_cm": 143.9,
+      "uferdig": false,
+      "dybde_fra_cm": 196.8,
+      "dybde_til_cm": 51.1,
+      "snitt_cm_min": 6.0,
+      "stopp": 1,
+      "varighet": "44 min"
+    },
+    {
+      "fil": "2026-10-14_K92x_pilotboring.json",
+      "kombinert": false,
+      "pel": "K92x",
+      "metode": "pilotboring",
+      "dato": "2026-10-14",
+      "lengde_cm": 187.8,
+      "uferdig": false,
+      "dybde_fra_cm": 9.6,
+      "dybde_til_cm": 197.4,
+      "snitt_cm_min": -10.79,
+      "stopp": 0,
+      "varighet": "17 min"
+    },
+    {
+      "fil": "2026-10-14_K92x_prejet.json",
+      "kombinert": false,
+      "pel": "K92x",
+      "metode": "prejet",
+      "dato": "2026-10-14",
+      "lengde_cm": 77.4,
+      "uferdig": false,
+      "dybde_fra_cm": 193.0,
+      "dybde_til_cm": 116.2,
+      "snitt_cm_min": 9.01,
+      "stopp": 1,
+      "varighet": "27 min"
+    },
+    {
       "fil": "_alle_2026-08-17.json",
       "kombinert": true,
       "dato": "2026-08-17",
@@ -1383,6 +1425,12 @@
       "kombinert": true,
       "dato": "2026-10-10",
       "antall": 14
+    },
+    {
+      "fil": "_alle_2026-10-11.json",
+      "kombinert": true,
+      "dato": "2026-10-11",
+      "antall": 17
     }
   ]
 }
