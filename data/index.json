@@ -1,6 +1,6 @@
 {
-  "generert": "2026-10-15T12:09:33",
-  "antall": 109,
+  "generert": "2026-10-16T06:01:44",
+  "antall": 116,
   "hendelser": [
     {
       "fil": "2026-08-17_G49_grouting.json",
@@ -1361,6 +1361,90 @@
       "varighet": "27 min"
     },
     {
+      "fil": "2026-10-15_k100_grouting.json",
+      "kombinert": false,
+      "pel": "k100",
+      "metode": "grouting",
+      "dato": "2026-10-15",
+      "lengde_cm": 115.0,
+      "uferdig": false,
+      "dybde_fra_cm": 164.5,
+      "dybde_til_cm": 52.8,
+      "snitt_cm_min": 5.59,
+      "stopp": 0,
+      "varighet": "34 min"
+    },
+    {
+      "fil": "2026-10-15_k100_grouting_2.json",
+      "kombinert": false,
+      "pel": "k100",
+      "metode": "grouting",
+      "dato": "2026-10-15",
+      "lengde_cm": 54.2,
+      "uferdig": false,
+      "dybde_fra_cm": 104.4,
+      "dybde_til_cm": 49.9,
+      "snitt_cm_min": 5.09,
+      "stopp": 0,
+      "varighet": "22 min"
+    },
+    {
+      "fil": "2026-10-15_k100_pilotboring.json",
+      "kombinert": false,
+      "pel": "k100",
+      "metode": "pilotboring",
+      "dato": "2026-10-15",
+      "lengde_cm": 108.2,
+      "uferdig": false,
+      "dybde_fra_cm": -0.0,
+      "dybde_til_cm": 50.1,
+      "snitt_cm_min": 6.27,
+      "stopp": 0,
+      "varighet": "52 min"
+    },
+    {
+      "fil": "2026-10-15_k100_pilotboring_2.json",
+      "kombinert": false,
+      "pel": "k100",
+      "metode": "pilotboring",
+      "dato": "2026-10-15",
+      "lengde_cm": 32.1,
+      "uferdig": false,
+      "dybde_fra_cm": -31.8,
+      "dybde_til_cm": 104.4,
+      "snitt_cm_min": -6.55,
+      "stopp": 0,
+      "varighet": "18 min"
+    },
+    {
+      "fil": "2026-10-15_k100_prejet.json",
+      "kombinert": false,
+      "pel": "k100",
+      "metode": "prejet",
+      "dato": "2026-10-15",
+      "lengde_cm": 178.5,
+      "uferdig": false,
+      "dybde_fra_cm": 146.7,
+      "dybde_til_cm": -31.8,
+      "snitt_cm_min": 153.0,
+      "stopp": 0,
+      "varighet": "1 min"
+    },
+    {
+      "fil": "2026-10-15_k101_grouting.json",
+      "kombinert": false,
+      "pel": "k101",
+      "metode": "grouting",
+      "dato": "2026-10-15",
+      "lengde_cm": 102.9,
+      "uferdig": false,
+      "dybde_fra_cm": 103.9,
+      "dybde_til_cm": 1.0,
+      "snitt_cm_min": 57.7,
+      "stopp": 0,
+      "varighet": "2 min"
+    },
+    {
       "fil": "_alle_2026-08-17.json",
       "kombinert": true,
       "dato": "2026-08-17",
@@ -1431,6 +1515,12 @@
       "kombinert": true,
       "dato": "2026-10-11",
       "antall": 17
+    },
+    {
+      "fil": "_alle_2026-10-12.json",
+      "kombinert": true,
+      "dato": "2026-10-12",
+      "antall": 23
     }
   ]
 }
