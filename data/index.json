@@ -1,5 +1,5 @@
 {
-  "generert": "2026-10-19T13:49:05",
+  "generert": "2026-10-19T13:59:42",
   "antall": 122,
   "hendelser": [
     {
@@ -1382,11 +1382,11 @@
       "dato": "2026-10-15",
       "lengde_cm": 108.6,
       "uferdig": false,
-      "dybde_fra_cm": -0.0,
+      "dybde_fra_cm": 164.2,
       "dybde_til_cm": 50.1,
       "snitt_cm_min": 6.26,
       "stopp": 0,
-      "varighet": "52 min"
+      "varighet": "46 min"
     },
     {
       "fil": "2026-10-15_k101_grouting.json",

@@ -315,6 +315,29 @@ def finn(df: pd.DataFrame, args: argparse.Namespace) -> list[dict]:
                 i0 = max(a, int(df["Tid"].searchsorted(
                     df["Tid"].iloc[i0]
                     - pd.Timedelta(seconds=args.start_for))))
+            # Prejet og grouting er et OPPTREKK fra bunnen og opp. Ligger det
+            # en dypere prove inne i vinduet enn der det begynner, er
+            # begynnelsen bare nedkjoeringen til bunnen. Da skal hendelsen
+            # begynne der opptrekket begynner - ellers kan det staa «0 -> 50
+            # cm» for prejet mens grouting samme dag gaar fra 165 cm, og
+            # tallene henger ikke sammen.
+            if hendelse["modus"] in ("PREJETTING", "GROUTING"):
+                raa = pd.Series(df["dybde"].iloc[i0:i1 + 1].to_numpy(dtype=float))
+                vindauge = min(61, max(3, len(raa) // 25))
+                glatt = raa.rolling(window=vindauge, center=True,
+                                    min_periods=1).median().to_numpy()
+                if np.isfinite(glatt).any() and np.isfinite(glatt[0]):
+                    # Opptrekket begynner paa bunnen. Ligger bunnen et stykke
+                    # inn i vinduet - fordi vinduet ogssa rommer nedkjoeringen
+                    # dit - skal hendelsen begynne der, ikke paa toppen. Da
+                    # faar prejet og grouting samme startdybde, og «0 -> 50
+                    # cm» mot «165 -> 53 cm» ikke lenger ulike historier.
+                    # Bare naar bunnen ligger i forste halvdel OG er merkbart
+                    # dypere enn starten; ellers er vinduet som det er.
+                    dypest = int(np.nanargmax(glatt))
+                    if (0 < dypest < len(glatt) // 2
+                            and glatt[dypest] > glatt[0] + 20.0):
+                        i0 += dypest
             if i1 - i0 < 30:
                 continue
             # Et vindu der loggeren sto paa «av» hele tiden er ikke en

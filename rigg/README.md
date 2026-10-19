@@ -118,7 +118,7 @@ dekodes på nytt:
 ]
 ```
 
-To regler til gjelder i dekodingen:
+Tre regler til gjelder i dekodingen:
 
 - **Logging av = ikke arbeid.** Er `START_STOPP_LOGG` null for hele vinduet, blir
   det ingen hendelse. Det er slangetrekk og handtering, ikke boring eller
@@ -127,3 +127,8 @@ To regler til gjelder i dekodingen:
 - **Pilotboring måler hele strekket.** En boring som starter på −32 cm og ender
   på 100 cm er 132 cm, ikke 100 − 32 = 68. Prejet og grouting beholder
   «summen av seksjonene som teller med», som er tallet i plottets overskrift.
+- **Prejet og grouting begynner på bunnen.** Vinduet rommer også nedkjøringen
+  til bunnen. Ligger bunnen et stykke inn i vinduet, flyttes starten dit, så
+  prejet og grouting for samme pel starter på samme dybde (f.eks. 164,2 og
+  164,5 cm) i stedet for at prejet ser ut til å gå fra 0 cm.
+
