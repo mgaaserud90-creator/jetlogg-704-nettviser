@@ -118,7 +118,7 @@ dekodes på nytt:
 ]
 ```
 
-Tre regler til gjelder i dekodingen:
+Fire regler til gjelder i dekodingen:
 
 - **Logging av = ikke arbeid.** Er `START_STOPP_LOGG` null for hele vinduet, blir
   det ingen hendelse. Det er slangetrekk og handtering, ikke boring eller
@@ -131,4 +131,11 @@ Tre regler til gjelder i dekodingen:
   til bunnen. Ligger bunnen et stykke inn i vinduet, flyttes starten dit, så
   prejet og grouting for samme pel starter på samme dybde (f.eks. 164,2 og
   164,5 cm) i stedet for at prejet ser ut til å gå fra 0 cm.
+- **Returen etter opptrekket holdes utenfor.** Når jettingen er ferdig kjøres
+  slangen ofte ned igjen før neste metode. Blir den med, blir netto bevegelse
+  nesten null og økten forsvinner helt (k103 16.10: prejet 90 → 49 → 91 cm).
+  Hendelsen kuttes derfor ved det grunneste punktet. Er det fortsatt under
+  5 cm igjen oppover etter kuttingen, lages ingen hendelse – da var det ingen
+  jetting, bare en logget økt.
+
 

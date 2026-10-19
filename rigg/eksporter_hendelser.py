@@ -303,6 +303,24 @@ def finn(df: pd.DataFrame, args: argparse.Namespace) -> list[dict]:
         else:
             hendelser = rap.velg_hendelser(df, pel["okter"], grense=(a, b),
                                            tillatt_hull_s=args.hull_s)
+            # Sikkerhetsnett: har riggen logget en metode som ikke ble valgt?
+            # Det skjer naar vinduet rommer baade opptrekket OG nedkjoeringen
+            # etterpaa, saa netto bevegelse blir ~0 (k103 16.10.15: prejet
+            # 90 -> 49 -> 91 cm). Trimmen lenger ned kutter start og slutt, og
+            # da staar den ekte bevegelsen igjen. Metoden maa likevel finnes
+            # som egen okt i loggen - vi dikter ikke opp arbeid.
+            valgte = {str(h["modus"]) for h in hendelser}
+            for modus in ("PREJETTING", "GROUTING"):
+                if modus in valgte:
+                    continue
+                gruppe = [o for o in pel["okter"]
+                          if str(o["modus"]) == modus]
+                if not gruppe:
+                    continue
+                for vindu in rap.arbeidsvinduer(df, gruppe, grense=(a, b),
+                                                tillatt_hull_s=args.hull_s):
+                    hendelser.append({"modus": modus, "vindu": vindu})
+                    break
 
         for hendelse in hendelser:
             i0, i1 = hendelse["vindu"]
@@ -322,6 +340,7 @@ def finn(df: pd.DataFrame, args: argparse.Namespace) -> list[dict]:
             # cm» for prejet mens grouting samme dag gaar fra 165 cm, og
             # tallene henger ikke sammen.
             if hendelse["modus"] in ("PREJETTING", "GROUTING"):
+                start0 = i0
                 raa = pd.Series(df["dybde"].iloc[i0:i1 + 1].to_numpy(dtype=float))
                 vindauge = min(61, max(3, len(raa) // 25))
                 glatt = raa.rolling(window=vindauge, center=True,
@@ -332,12 +351,18 @@ def finn(df: pd.DataFrame, args: argparse.Namespace) -> list[dict]:
                     # dit - skal hendelsen begynne der, ikke paa toppen. Da
                     # faar prejet og grouting samme startdybde, og «0 -> 50
                     # cm» mot «165 -> 53 cm» ikke lenger ulike historier.
-                    # Bare naar bunnen ligger i forste halvdel OG er merkbart
-                    # dypere enn starten; ellers er vinduet som det er.
                     dypest = int(np.nanargmax(glatt))
                     if (0 < dypest < len(glatt) // 2
                             and glatt[dypest] > glatt[0] + 20.0):
-                        i0 += dypest
+                        i0 = start0 + dypest
+                    # Samme i andre enden: naar opptrekket er ferdig kjoeres
+                    # slangen ofte ned igjen for neste metode. Den returen er
+                    # ikke en del av jettingen - uten dette blir netto
+                    # bevegelse ~0 og oekten teller ikke i det hele tatt.
+                    grunn = int(np.nanargmin(glatt))
+                    if (grunn > dypest and grunn < len(glatt) - 1
+                            and glatt[grunn] < glatt[-1] - 2.0):
+                        i1 = start0 + grunn
             if i1 - i0 < 30:
                 continue
             # Et vindu der loggeren sto paa «av» hele tiden er ikke en
@@ -356,6 +381,18 @@ def finn(df: pd.DataFrame, args: argparse.Namespace) -> list[dict]:
                 continue
             dybde_fra = float(rader[0]["dybde_fra_cm"])
             dybde_til = float(rader[-1]["dybde_til_cm"])
+            # Etter trimmingen skal et opptrekk faktisk ha flyttet seg oppover.
+            # Gjor det ikke det, er det ingen jetting aa rapportere - logget
+            # okt eller ikke.
+            if (hendelse["modus"] in ("PREJETTING", "GROUTING")
+                    and dybde_fra - dybde_til < 5.0):
+                continue
+            # Etter trimmingen skal et opptrekk faktisk ha flyttet seg oppover.
+            # Gjor det ikke det, er det ingen jetting aa rapportere - logget
+            # okt eller ikke.
+            if (hendelse["modus"] in ("PREJETTING", "GROUTING")
+                    and dybde_fra - dybde_til < 5.0):
+                continue
             sek = float((df["Tid"].iloc[i1]
                          - df["Tid"].iloc[i0]).total_seconds())
             # Lengden og snittfarten regnes bare over seksjonene som teller

@@ -13,7 +13,7 @@
   "lengde_cm": 18.7,
   "flyttet_cm": 18.7,
   "retning": "ned",
-  "snitt_cm_min": -3.0,
+  "snitt_cm_min": 3.0,
   "jevn_bevegelse": 0,
   "utelatt_pst": 0.0,
   "pel_metoder": [
