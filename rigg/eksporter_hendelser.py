@@ -207,6 +207,58 @@ def gjennomsnitt(rader: list[dict]) -> float | None:
                  / tid, 2)
 
 
+def les_pel_overstyring(sti: Path) -> list[dict]:
+    """Leser tabellen over pelenummer riggen har skrevet feil.
+
+    Hver oppforing er ``{"fra": ISO, "til": ISO, "fra_pel": ..., "pel": ...}``.
+    Radene i tidsrommet faar pelenummeret ``pel``, uansett hva riggen skrev.
+    Bakgrunnen er at operatoren noen ganger gar videre til neste pel uten at
+    PEL_NR-feltet i loggen blir med - da havner neste pel sitt arbeid under
+    den forrige pelen. Tidsstemplene er faste, saa rettelsen blir den samme
+    hver gang eksporten dekodes paa nytt.
+    """
+    if not sti.exists():
+        return []
+    try:
+        tabell = json.loads(sti.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+    if not isinstance(tabell, list):
+        return []
+    ut: list[dict] = []
+    for rad in tabell:
+        try:
+            ut.append({"fra": pd.Timestamp(rad["fra"]),
+                       "til": pd.Timestamp(rad["til"]),
+                       "fra_pel": str(rad.get("fra_pel") or "").strip().lower(),
+                       "pel": str(rad["pel"]).strip()})
+        except (KeyError, TypeError, ValueError):
+            continue
+    return ut
+
+
+def bruk_pel_overstyring(df: pd.DataFrame, tabell: list[dict]) -> int:
+    """Setter pelenummeret paa radene i hvert tidsrom.
+
+    Returnerer hvor mange rader som ble endret, saa kallene kan si fra.
+    """
+    if not tabell or rap.PEL_KOLONNE not in df.columns:
+        return 0
+    tider = df["Tid"]
+    pel = df[rap.PEL_KOLONNE].astype(str).str.strip().str.lower()
+    endret = 0
+    for rad in tabell:
+        maske = (tider >= rad["fra"]) & (tider <= rad["til"])
+        if rad["fra_pel"]:
+            maske &= pel == rad["fra_pel"]
+        antall = int(maske.sum())
+        if not antall:
+            continue
+        df.loc[maske, rap.PEL_KOLONNE] = rad["pel"]
+        endret += antall
+    return endret
+
+
 def finn(df: pd.DataFrame, args: argparse.Namespace) -> list[dict]:
     """Alle hendelsene i filen, klar for JSON."""
     skift = args.skift_hull * 3600.0
@@ -265,6 +317,17 @@ def finn(df: pd.DataFrame, args: argparse.Namespace) -> list[dict]:
                     - pd.Timedelta(seconds=args.start_for))))
             if i1 - i0 < 30:
                 continue
+            # Et vindu der loggeren sto paa «av» hele tiden er ikke en
+            # operasjon, men slangetrekk/handtering: riggen skriver dybde
+            # likevel. Uten denne sjekken blir slike strekk til «hendelser»
+            # paa faa sekunder (f.eks. k101 16.10. 16:18-16:20, der slangen
+            # ble trukket opp med loggingen av).
+            if rap.STARTSTOPP_KOLONNE in df.columns:
+                logg_av = pd.to_numeric(
+                    df[rap.STARTSTOPP_KOLONNE].iloc[i0:i1 + 1],
+                    errors="coerce").fillna(1.0)
+                if not (logg_av > 0).any():
+                    continue
             rader = seksjoner(df, (i0, i1), ferdige, args)
             if not rader:
                 continue
@@ -295,6 +358,16 @@ def finn(df: pd.DataFrame, args: argparse.Namespace) -> list[dict]:
                 snitt = (round(lengde / sek * 60.0, 2) if sek > 0 else None)
                 # Hele forflytningen er brukt - da er det ikke noe utvalg aa
                 # holde utenfor, og utelatt er null.
+                utelatt_pst = 0.0
+            if hendelse["modus"] == "PILOTDRILL":
+                # En pilotboring er ÉN sammenhengende boring, fra der
+                # borestrengen sto til der den endte. Summen av seksjonene
+                # som «teller med» passer ikke her: den kaster bort nettopp
+                # de urolige fasene, og en boring som starter paa -32 cm og
+                # ender paa 100 cm er 132 cm - ikke 100 - 32 = 68. Bruk hele
+                # strekket, med fortegnene som de er.
+                lengde = abs(dybde_til - dybde_fra)
+                snitt = (round(lengde / sek * 60.0, 2) if sek > 0 else None)
                 utelatt_pst = 0.0
             # -- kurvene for hendelsesvinduet, prove for prove -------------
             bit = df.iloc[i0:i1 + 1]
@@ -340,6 +413,13 @@ def finn(df: pd.DataFrame, args: argparse.Namespace) -> list[dict]:
             if uferdig and rap.STARTSTOPP_KOLONNE in df.columns:
                 slutt = df[rap.STARTSTOPP_KOLONNE].iloc[i1]
                 uferdig = not (slutt == 0.0)
+            # Pilotboringen gaar nedover (dybden oker) eller oppover (minker),
+            # uansett hva summen av seksjonene ble. De andre metodene beholder
+            # regelen fra for: summen avgjor retningen.
+            if hendelse["modus"] == "PILOTDRILL":
+                retning = "opp" if dybde_til < dybde_fra else "ned"
+            else:
+                retning = "opp" if lengde >= 0 else "ned"
             ut.append({
                 "pel": str(pel["pel"]),
                 "dato": df["Tid"].iloc[i0].strftime("%Y-%m-%d"),
@@ -354,7 +434,7 @@ def finn(df: pd.DataFrame, args: argparse.Namespace) -> list[dict]:
                 "dybde_til_cm": round(dybde_til, 1),
                 "lengde_cm": round(abs(lengde), 1),
                 "flyttet_cm": round(abs(dybde_til - dybde_fra), 1),
-                "retning": "opp" if lengde >= 0 else "ned",
+                "retning": retning,
                 "snitt_cm_min": snitt,
                 "jevn_bevegelse": len(gyldige),
                 "utelatt_pst": utelatt_pst,
@@ -375,6 +455,11 @@ def main(argv: list[str] | None = None) -> int:
         description="Skriv hendelsene i en riggeksport som JSON. Bare "
                     "hendelsene - ikke kurvene.")
     parser.add_argument("fil", help="eksport fra riggen (.csv)")
+    parser.add_argument("--pel-overstyring", default=str(
+                            Path(__file__).resolve().parent / "pel_overstyring.json"),
+                        metavar="FIL",
+                        help="tabell over pelenummer riggen har skrevet feil, "
+                             "styrt av tidsstempler (pel_overstyring.json)")
     parser.add_argument("--ut", "-o", default=None,
                         help="hvor JSON-filen skal ligge. Standard: samme navn "
                              "som kilden, men .json")
@@ -443,6 +528,10 @@ def main(argv: list[str] | None = None) -> int:
     utfil = Path(args.ut) if args.ut else kilde.with_suffix(".json")
 
     df = rap.les_logg(kilde)
+    tabell = les_pel_overstyring(Path(args.pel_overstyring))
+    endret = bruk_pel_overstyring(df, tabell)
+    if endret:
+        print(f"pel-overstyring: {endret} rader fikk rettet pelenummer")
     hendelser = finn(df, args)
 
     data = {

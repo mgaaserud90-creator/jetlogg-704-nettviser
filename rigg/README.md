@@ -98,3 +98,32 @@ dekodes og slettes med en gang. Kilden du peker på røres ikke.
 avviser enkeltfiler over 100 MB i en push, men med ~1,8 MB JSON per døgn slår
 den grensen først rundt 125 døgn. Det som faktisk begrenser én vanlig kjøring er
 minne og tid: hold deg til **≤ 20 døgn per bit**.
+
+## Pel som er logget under feil nummer
+
+Riggen kan gå videre til neste pel uten at `PEL_NR`-feltet blir med. Da havner
+arbeidet til neste pel under den forrige. `rigg/pel_overstyring.json` retter
+slike tilfeller med tidsstempler, så rettelsen blir lik hver gang eksporten
+dekodes på nytt:
+
+```json
+[
+  {
+    "fra": "2026-10-15T15:10:36",
+    "til": "2026-10-15T23:59:59",
+    "fra_pel": "k100",
+    "pel": "k101",
+    "grunn": "k101 ble boret, jettet og groutet mens loggen fortsatt sa k100"
+  }
+]
+```
+
+To regler til gjelder i dekodingen:
+
+- **Logging av = ikke arbeid.** Er `START_STOPP_LOGG` null for hele vinduet, blir
+  det ingen hendelse. Det er slangetrekk og handtering, ikke boring eller
+  jetting – uten denne reglen ble slike strekk til «hendelser» på noen
+  sekunder.
+- **Pilotboring måler hele strekket.** En boring som starter på −32 cm og ender
+  på 100 cm er 132 cm, ikke 100 − 32 = 68. Prejet og grouting beholder
+  «summen av seksjonene som teller med», som er tallet i plottets overskrift.

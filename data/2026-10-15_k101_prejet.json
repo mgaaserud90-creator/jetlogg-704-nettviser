@@ -1,8 +1,8 @@
 {
-  "pel": "k100",
+  "pel": "k101",
   "dato": "2026-10-15",
-  "modus": "GROUTING",
-  "metode": "grouting",
+  "modus": "PREJETTING",
+  "metode": "prejet",
   "start": "2026-10-15T15:31:23",
   "stopp": "2026-10-15T15:53:42",
   "uferdig": false,
@@ -17,9 +17,9 @@
   "jevn_bevegelse": 2,
   "utelatt_pst": 56.0,
   "pel_metoder": [
-    "grouting",
     "pilotboring",
-    "prejet"
+    "prejet",
+    "grouting"
   ],
   "seksjoner": [
     {
@@ -95,27 +95,27 @@
     {
       "nr": 6,
       "fra": "15:43:54",
-      "til": "15:46:56",
+      "til": "15:46:58",
       "fra_iso": "2026-10-15T15:43:54",
-      "til_iso": "2026-10-15T15:46:56",
-      "sek": 182.0,
+      "til_iso": "2026-10-15T15:46:58",
+      "sek": 184.0,
       "dybde_fra_cm": 104.1,
-      "dybde_til_cm": 79.6,
-      "lengde_cm": 24.5,
-      "cm_min": 6.66,
-      "r2": 0.977,
+      "dybde_til_cm": 79.4,
+      "lengde_cm": 24.7,
+      "cm_min": 6.65,
+      "r2": 0.9775,
       "merknad": ""
     },
     {
       "nr": 7,
-      "fra": "15:46:57",
+      "fra": "15:46:59",
       "til": "15:53:42",
-      "fra_iso": "2026-10-15T15:46:57",
+      "fra_iso": "2026-10-15T15:46:59",
       "til_iso": "2026-10-15T15:53:42",
-      "sek": 405.0,
-      "dybde_fra_cm": 79.6,
+      "sek": 403.0,
+      "dybde_fra_cm": 79.4,
       "dybde_til_cm": 49.9,
-      "lengde_cm": 29.7,
+      "lengde_cm": 29.5,
       "cm_min": 4.38,
       "r2": 0.9999,
       "merknad": ""
