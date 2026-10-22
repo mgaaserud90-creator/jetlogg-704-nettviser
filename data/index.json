@@ -1,6 +1,6 @@
 {
-  "generert": "2026-10-21T06:48:06",
-  "antall": 133,
+  "generert": "2026-10-22T07:51:15",
+  "antall": 140,
   "hendelser": [
     {
       "fil": "2026-08-17_G49_grouting.json",
@@ -1641,6 +1641,90 @@
       "varighet": "35 min"
     },
     {
+      "fil": "2026-10-21_C5_pilotboring.json",
+      "kombinert": false,
+      "pel": "C5",
+      "metode": "pilotboring",
+      "dato": "2026-10-21",
+      "lengde_cm": 78.5,
+      "uferdig": false,
+      "dybde_fra_cm": -0.0,
+      "dybde_til_cm": 78.5,
+      "snitt_cm_min": 6.31,
+      "stopp": 0,
+      "varighet": "12 min"
+    },
+    {
+      "fil": "2026-10-21_C5_pilotboring_2.json",
+      "kombinert": false,
+      "pel": "C5",
+      "metode": "pilotboring",
+      "dato": "2026-10-21",
+      "lengde_cm": 47.7,
+      "uferdig": false,
+      "dybde_fra_cm": 87.5,
+      "dybde_til_cm": 135.2,
+      "snitt_cm_min": 2.06,
+      "stopp": 0,
+      "varighet": "23 min"
+    },
+    {
+      "fil": "2026-10-21_G52X_grouting.json",
+      "kombinert": false,
+      "pel": "G52X",
+      "metode": "grouting",
+      "dato": "2026-10-21",
+      "lengde_cm": 125.1,
+      "uferdig": false,
+      "dybde_fra_cm": 405.7,
+      "dybde_til_cm": 278.2,
+      "snitt_cm_min": 7.4,
+      "stopp": 1,
+      "varighet": "33 min"
+    },
+    {
+      "fil": "2026-10-21_G52X_pilotboring.json",
+      "kombinert": false,
+      "pel": "G52X",
+      "metode": "pilotboring",
+      "dato": "2026-10-21",
+      "lengde_cm": 383.0,
+      "uferdig": false,
+      "dybde_fra_cm": 22.0,
+      "dybde_til_cm": 405.0,
+      "snitt_cm_min": 2.64,
+      "stopp": 1,
+      "varighet": "2 t 25 min"
+    },
+    {
+      "fil": "2026-10-21_G52X_prejet.json",
+      "kombinert": false,
+      "pel": "G52X",
+      "metode": "prejet",
+      "dato": "2026-10-21",
+      "lengde_cm": 135.9,
+      "uferdig": false,
+      "dybde_fra_cm": 406.3,
+      "dybde_til_cm": 262.2,
+      "snitt_cm_min": 7.46,
+      "stopp": 1,
+      "varighet": "48 min"
+    },
+    {
+      "fil": "2026-10-22_C5_pilotboring.json",
+      "kombinert": false,
+      "pel": "C5",
+      "metode": "pilotboring",
+      "dato": "2026-10-22",
+      "lengde_cm": 224.4,
+      "uferdig": true,
+      "dybde_fra_cm": 134.6,
+      "dybde_til_cm": 359.0,
+      "snitt_cm_min": 39.37,
+      "stopp": 0,
+      "varighet": "6 min"
+    },
+    {
       "fil": "_alle_2026-08-17.json",
       "kombinert": true,
       "dato": "2026-08-17",
@@ -1735,6 +1819,12 @@
       "kombinert": true,
       "dato": "2026-10-17",
       "antall": 9
+    },
+    {
+      "fil": "_alle_2026-10-18.json",
+      "kombinert": true,
+      "dato": "2026-10-18",
+      "antall": 15
     }
   ]
 }
