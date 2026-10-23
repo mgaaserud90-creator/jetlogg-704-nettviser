@@ -1,6 +1,6 @@
 {
-  "generert": "2026-10-22T07:51:15",
-  "antall": 140,
+  "generert": "2026-10-23T09:36:59",
+  "antall": 145,
   "hendelser": [
     {
       "fil": "2026-08-17_G49_grouting.json",
@@ -1711,16 +1711,72 @@
       "varighet": "48 min"
     },
     {
+      "fil": "2026-10-22_C5_grouting.json",
+      "kombinert": false,
+      "pel": "C5",
+      "metode": "grouting",
+      "dato": "2026-10-22",
+      "lengde_cm": 485.6,
+      "uferdig": false,
+      "dybde_fra_cm": 524.3,
+      "dybde_til_cm": 61.3,
+      "snitt_cm_min": 7.41,
+      "stopp": 3,
+      "varighet": "2 t 16 min"
+    },
+    {
       "fil": "2026-10-22_C5_pilotboring.json",
       "kombinert": false,
       "pel": "C5",
       "metode": "pilotboring",
       "dato": "2026-10-22",
-      "lengde_cm": 224.4,
-      "uferdig": true,
+      "lengde_cm": 390.5,
+      "uferdig": false,
       "dybde_fra_cm": 134.6,
-      "dybde_til_cm": 359.0,
-      "snitt_cm_min": 39.37,
+      "dybde_til_cm": 525.1,
+      "snitt_cm_min": 27.47,
+      "stopp": 0,
+      "varighet": "14 min"
+    },
+    {
+      "fil": "2026-10-22_C5_prejet.json",
+      "kombinert": false,
+      "pel": "C5",
+      "metode": "prejet",
+      "dato": "2026-10-22",
+      "lengde_cm": 449.9,
+      "uferdig": false,
+      "dybde_fra_cm": 525.2,
+      "dybde_til_cm": 55.7,
+      "snitt_cm_min": 8.72,
+      "stopp": 0,
+      "varighet": "73 min"
+    },
+    {
+      "fil": "2026-10-22_K24_pilotboring.json",
+      "kombinert": false,
+      "pel": "K24",
+      "metode": "pilotboring",
+      "dato": "2026-10-22",
+      "lengde_cm": 188.4,
+      "uferdig": false,
+      "dybde_fra_cm": -32.7,
+      "dybde_til_cm": 155.7,
+      "snitt_cm_min": 3.61,
+      "stopp": 0,
+      "varighet": "52 min"
+    },
+    {
+      "fil": "2026-10-23_K24_pilotboring.json",
+      "kombinert": false,
+      "pel": "K24",
+      "metode": "pilotboring",
+      "dato": "2026-10-23",
+      "lengde_cm": 22.6,
+      "uferdig": true,
+      "dybde_fra_cm": 166.8,
+      "dybde_til_cm": 189.4,
+      "snitt_cm_min": 3.94,
       "stopp": 0,
       "varighet": "6 min"
     },
@@ -1825,6 +1881,12 @@
       "kombinert": true,
       "dato": "2026-10-18",
       "antall": 15
+    },
+    {
+      "fil": "_alle_2026-10-19.json",
+      "kombinert": true,
+      "dato": "2026-10-19",
+      "antall": 19
     }
   ]
 }
