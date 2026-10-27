@@ -1,6 +1,6 @@
 {
-  "generert": "2026-10-26T12:54:48",
-  "antall": 162,
+  "generert": "2026-10-27T13:10:53",
+  "antall": 170,
   "hendelser": [
     {
       "fil": "2026-08-17_G49_grouting.json",
@@ -1977,6 +1977,104 @@
       "varighet": "45 min"
     },
     {
+      "fil": "2026-10-26_G51X_pilotboring.json",
+      "kombinert": false,
+      "pel": "G51X",
+      "metode": "pilotboring",
+      "dato": "2026-10-26",
+      "lengde_cm": 243.5,
+      "uferdig": false,
+      "dybde_fra_cm": 58.9,
+      "dybde_til_cm": 302.4,
+      "snitt_cm_min": 2.88,
+      "stopp": 1,
+      "varighet": "84 min"
+    },
+    {
+      "fil": "2026-10-26_K200_grouting.json",
+      "kombinert": false,
+      "pel": "K200",
+      "metode": "grouting",
+      "dato": "2026-10-26",
+      "lengde_cm": 70.6,
+      "uferdig": false,
+      "dybde_fra_cm": 132.9,
+      "dybde_til_cm": 50.6,
+      "snitt_cm_min": 4.27,
+      "stopp": 0,
+      "varighet": "20 min"
+    },
+    {
+      "fil": "2026-10-26_K200_pilotboring.json",
+      "kombinert": false,
+      "pel": "K200",
+      "metode": "pilotboring",
+      "dato": "2026-10-26",
+      "lengde_cm": 164.9,
+      "uferdig": false,
+      "dybde_fra_cm": -31.4,
+      "dybde_til_cm": 133.5,
+      "snitt_cm_min": 2.89,
+      "stopp": 0,
+      "varighet": "57 min"
+    },
+    {
+      "fil": "2026-10-26_K200_prejet.json",
+      "kombinert": false,
+      "pel": "K200",
+      "metode": "prejet",
+      "dato": "2026-10-26",
+      "lengde_cm": 75.7,
+      "uferdig": false,
+      "dybde_fra_cm": 133.5,
+      "dybde_til_cm": 50.2,
+      "snitt_cm_min": 5.55,
+      "stopp": 1,
+      "varighet": "31 min"
+    },
+    {
+      "fil": "2026-10-26_K201_grouting.json",
+      "kombinert": false,
+      "pel": "K201",
+      "metode": "grouting",
+      "dato": "2026-10-26",
+      "lengde_cm": 63.9,
+      "uferdig": false,
+      "dybde_fra_cm": 116.6,
+      "dybde_til_cm": 50.1,
+      "snitt_cm_min": 4.66,
+      "stopp": 0,
+      "varighet": "16 min"
+    },
+    {
+      "fil": "2026-10-26_K201_pilotboring.json",
+      "kombinert": false,
+      "pel": "K201",
+      "metode": "pilotboring",
+      "dato": "2026-10-26",
+      "lengde_cm": 148.5,
+      "uferdig": false,
+      "dybde_fra_cm": -31.7,
+      "dybde_til_cm": 116.8,
+      "snitt_cm_min": 8.86,
+      "stopp": 0,
+      "varighet": "17 min"
+    },
+    {
+      "fil": "2026-10-26_K201_prejet.json",
+      "kombinert": false,
+      "pel": "K201",
+      "metode": "prejet",
+      "dato": "2026-10-26",
+      "lengde_cm": 63.9,
+      "uferdig": false,
+      "dybde_fra_cm": 116.9,
+      "dybde_til_cm": 50.2,
+      "snitt_cm_min": 5.04,
+      "stopp": 0,
+      "varighet": "17 min"
+    },
+    {
       "fil": "2026-10-26_k26_grouting.json",
       "kombinert": false,
       "pel": "k26",
@@ -2109,6 +2207,12 @@
       "kombinert": true,
       "dato": "2026-10-22",
       "antall": 20
+    },
+    {
+      "fil": "_alle_2026-10-23.json",
+      "kombinert": true,
+      "dato": "2026-10-23",
+      "antall": 21
     }
   ]
 }
